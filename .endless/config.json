@@ -1,0 +1,12 @@
+{
+  "name": "go-gitutil",
+  "label": "Go GitUtil",
+  "description": "Git Utility package for Go",
+  "language": "go",
+  "status": "active",
+  "identity": "34df40f95280a7fc39eca20264335b013e6371cc",
+  "dependencies": [],
+  "documents": {
+    "rules": []
+  }
+}
