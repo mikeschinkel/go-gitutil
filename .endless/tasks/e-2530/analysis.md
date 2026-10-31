@@ -1,0 +1,1 @@
+In Repo.LatestTag, strip the module's directory prefix before semver.IsValid and semver comparison, and return the full prefixed tag. Add a test with a nested-module fixture holding prefixed tags, plus a root-module case to show root tags are unaffected.
