@@ -1,0 +1,1 @@
+Mike chose on 2026-11-02 that git behaviour lives in go-gitutil, not in test files; which operations and what shape is his call
