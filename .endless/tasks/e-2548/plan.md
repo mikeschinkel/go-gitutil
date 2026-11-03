@@ -16,19 +16,21 @@ Terms:
 - go-gitutil runs git three different ways: `GitRunner.runGit` (buffers output, wraps errors with stderr), `Repo.runGit`, and raw `exec.Command` in OpenRepo and Streamer. Streamer methods take no context; every Repo method does.
 - gomion calls the package-level `StageModuleFiles` and `UnstageAll` wrappers, which buffer Streamer's output rather than stream it, so nothing in gomion relies on streaming today.
 
-## Q1. Where do creation operations live, given Repo requires an existing repository?
+## Q1. How do creation operations fit Repo, given OpenRepo requires an existing repository?
 
-**A. Package-level functions that return a Repo**: `InitRepo(ctx, dir, InitArgs) (*Repo, error)` and `Clone(ctx, src, dst, CloneArgs) (*Repo, error)`, the way `OpenRepo` already works.
-- Pros: a Repo never exists for a directory that is not a repository; the caller gets a Repo for the add and commit that follow.
-- Cons: none.
+Mike's packages construct struct types with a `New<Type>(params..., <Type>Args)` constructor that does no I/O, followed by an `Initialize(params...) error` method that does (go-cliutil's `NewWriter(args)`, `NewApp(args)`, `NewCmdBase(args)` and `cliutil.Initialize` are the pattern in use). A value that is constructed but not yet initialized is a normal state in that pattern. go-gitutil's Repo does not follow it today: `OpenRepo(ctx, dir)` constructs and initializes in one step and fails if `dir` is not a repository.
 
-**B. Methods on a Repo built by hand**: `(&Repo{Root: dir}).Init(ctx, args)`.
-- Pros: every operation is a method.
-- Cons: a Repo value exists whose Branch and Remote fields are unset, which every other method assumes OpenRepo filled in.
+**A. Bring Repo onto the New/Initialize pattern.** `NewRepo(dir, RepoArgs) *Repo` constructs; `(*Repo).Initialize(ctx) error` does what OpenRepo does today (rev-parse, current branch, remote). The creation operations are methods on a constructed, uninitialized Repo: `(*Repo).Init(ctx, InitArgs) error` and `(*Repo).Clone(ctx, src, CloneArgs) error` create the repository and then call Initialize. OpenRepo becomes a convenience for NewRepo plus Initialize, or goes.
+- Pros: one type and one construction style, the same as the rest of the ecosystem; creation operations are methods like every other operation, so go-fsfix's RepoFixture holds one Repo from construction through commit.
+- Cons: every method other than Init, Clone and Initialize must refuse to run on an uninitialized Repo (go-fsfix's `ensureCreated` is the same guard), or the type relies on documentation to keep callers from calling, say, Commit before Initialize.
+
+**B. Package-level functions that return an initialized Repo**: `InitRepo(ctx, dir, InitArgs) (*Repo, error)` and `Clone(ctx, src, dst, CloneArgs) (*Repo, error)` beside OpenRepo.
+- Pros: a Repo never exists uninitialized, so no method needs a guard.
+- Cons: departs from the New/Initialize pattern, leaving Repo as the one type in the ecosystem built three different ways by three package-level functions.
 
 **C. A separate builder type** for fixtures that chains init, add and commit.
 - Pros: a fixture reads as one expression.
-- Cons: a second object to learn for three operations, and go-fsfix already is that builder.
+- Cons: a second type to learn for three operations, and go-fsfix's RepoFixture already is that builder.
 
 Recommendation: A.
 
@@ -40,7 +42,7 @@ The fixture needs the identity fixed so a fixture is identical on every machine;
 - Pros: nothing persists; two commits in one test can carry different identities.
 - Cons: a commit made by the code under test (gomion's own commit flow running inside the fixture) does not get the fixed identity, so a test asserting on author output still depends on the machine's git config.
 
-**B. Per Repo**: an `Identity` field on Repo, applied to every write operation (commit, annotated tag).
+**B. Per Repo**: `Identity` in `RepoArgs`, applied to every write operation (commit, annotated tag).
 - Pros: set once per fixture.
 - Cons: two Repo values opened on the same directory behave differently; the identity is invisible on disk, so git run any other way (the code under test, a shell) does not see it.
 
