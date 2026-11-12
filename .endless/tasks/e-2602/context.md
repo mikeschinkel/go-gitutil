@@ -1,0 +1,1 @@
+go-gitutil has no test/ module; its one test, diff_parser_test.go, sits beside the code, which ED-1650 says to move. Brainstorm E-2548 chose to dogfood go-fsfix repo fixtures (E-2568) in go-gitutil's tests; the build-order friction while both change is a go.work tooling concern tracked in gomion E-2561 and endless E-1192, not an architecture one.
