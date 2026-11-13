@@ -60,3 +60,7 @@ While planning E-2600's strict mode, I offered isolating only git's global and s
 ### [2026-11-13] The nil-pointer rule is for struct-typed Args fields, not scalars
 Scopes the earlier lesson 'Use nil pointers, not zero-value rules, to mark an optional Args field as unset'. While planning E-2600 I applied it to MinVersion/MaxVersion and made them pointers. Mike said I over-indexed: he meant struct-typed fields (like a dt.Mailbox), where which property decides that the struct counts as 'not passed' is unclear. A scalar whose zero value is obvious and well known (an empty string, 0) keeps using the zero value to mean unset.
 - **Project**: go-gitutil
+
+### [2026-11-13] A worktree with no session is a staged task, not a failed spawn
+Investigating E-2551 (underway, worktree present, no session ever bound), I told Mike a spawn had pre-claimed the task and then failed to launch. Mike corrected me: the worktree was created on purpose to hold his main-checkout edit and wait for a later spawn. The ledger pattern (status flipped to underway by a system actor, worktree created the same second, no session) is what a deliberately staged task looks like, not evidence of a failure. When the record fits a deliberate path, say what the record shows and ask, rather than naming a failure.
+- **Project**: go-gitutil
