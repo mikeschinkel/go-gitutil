@@ -181,3 +181,8 @@ statement = "dev_other.go's ensureSameFilesystem takes dt.DirPath, so the packag
 id = "P67"
 kind = "deliverable"
 statement = "The current branch is read with git symbolic-ref, so Open works on an unborn branch and a detached HEAD yields an empty Branch instead of HEAD"
+
+[[item]]
+id = "P68"
+kind = "deliverable"
+statement = "GitRunner, an exported type with no exported methods, is deleted along with its separate run path"
