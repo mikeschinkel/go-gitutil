@@ -20,3 +20,7 @@ dirties a worktree.
 ### [2026-11-12] A brainstorm outcome is the current best understanding, not dogma; say so in it and expect it to evolve during implementation
 In E-2548 Mike asked for a note that the outcome is what we best understand and may need to evolve during implementation, because he finds that once an outcome is written it gets treated as settled and he has to fight to change a design when implementation reveals a need. Rule: write that caveat into every brainstorm or research outcome, and when implementation finds a reason to deviate, treat the outcome as a starting point to revise, not an authority to defend.
 - **Project**: go-gitutil
+
+### [2026-11-12] A choice that shapes one task's implementation is a task decision for its plan or analysis, even when the user made it; file a decision in the project it binds
+In E-2548 I filed four decisions; Mike rejected three as task-level (the Repo API shape with optional StdIO, where fixture constants live) or as a platitude (Go-module knowledge not in go-gitutil, 'water is wet'), and moved the fourth (singular util names across go-pkgs) to gomion because a cross-repo convention belongs where the ecosystem is managed, not in the repo where it came up. Rule: before filing, ask whether the statement would still bind if the task were deleted and whether anyone would argue the other side; a design the user chose for one package's API fails the first test and goes in the implementing task's analysis.
+- **Project**: go-gitutil
