@@ -4,3 +4,6 @@
 .endless/logs/
 .endless/worktree.json
 .endless/worktree.lock
+ 
+go.work
+go.work.sum
