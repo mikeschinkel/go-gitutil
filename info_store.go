@@ -1,10 +1,12 @@
 package gitutils
 
 import (
+	"context"
 	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"io/fs"
 	"os"
+	"strings"
 
 	"github.com/mikeschinkel/go-dt"
 	"github.com/mikeschinkel/go-dt/dtx"
@@ -140,7 +142,11 @@ end:
 
 func (s *InfoStore) GetDirPath() (dp dt.DirPath, err error) {
 	var exists bool
-	dp = dt.DirPathJoin(s.RepoPath, InfoPath)
+
+	dp, err = InfoDir(context.Background(), s.RepoPath)
+	if err != nil {
+		goto end
+	}
 	exists, err = dp.Exists()
 	switch {
 	case !exists:
@@ -200,4 +206,25 @@ func (s *InfoStore) ErrKV() ErrKV {
 		fp = ""
 	}
 	return fp.ErrKV()
+}
+
+// InfoDir returns the directory git keeps repoRoot's info/ files in, as git
+// itself resolves it. In a plain clone that is <repoRoot>/.git/info. In a
+// worktree or a submodule .git is a file pointing elsewhere, and info/ lives
+// in the git directory it points to, so the path cannot be built by joining
+// ".git/info" onto repoRoot.
+func InfoDir(ctx context.Context, repoRoot dt.DirPath) (dp dt.DirPath, err error) {
+	var out string
+
+	out, err = newGitRunner(repoRoot).runGit(ctx, runGitArgs{
+		Command: []string{"rev-parse", "--path-format=absolute", "--git-path", "info"},
+	})
+	if err != nil {
+		err = NewErr(ErrFailedInspectingGitInfoPath, "repo_root", repoRoot, err)
+		goto end
+	}
+	dp = dt.DirPath(strings.TrimSpace(out))
+
+end:
+	return dp, err
 }

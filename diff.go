@@ -86,14 +86,14 @@ func (r *Repo) GetDiff(ctx context.Context, relPath dt.RelFilepath) (fileDiff *F
 	// Get both file versions
 	commitContent, err = r.GetFileAtHEAD(ctx, relPath)
 	if err != nil {
+		// Ignore error for new files
 		commitContent = nil
-		err = nil // Ignore error for new files
 	}
 
 	actualContent, err = dt.FilepathJoin(r.Root, relPath).ReadFile()
 	if err != nil {
+		// File may not exist on disk (deleted file)
 		actualContent = nil
-		err = nil // File may not exist on disk (deleted file)
 	}
 
 	commitLines = []string{}
@@ -138,14 +138,6 @@ end:
 		fileDiff.NewLines = actualLines
 	}
 	return fileDiff, err
-}
-
-// safeGetLine returns a line from a slice or empty string if out of bounds
-func safeGetLine(lines []string, index int) string {
-	if index < 0 || index >= len(lines) {
-		return ""
-	}
-	return lines[index]
 }
 
 // FileChanges represents file differences optimized for split pane rendering

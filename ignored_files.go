@@ -70,9 +70,8 @@ end:
 // Creates .gitignore if it doesn't exist.
 // Patterns should be repo-root-relative paths (e.g., "debug.log", "build/").
 func AppendToGitignore(repoRoot dt.DirPath, patterns []string) (err error) {
-	var gitignorePath dt.Filepath
+	var gitignorePath = dt.FilepathJoin(repoRoot, ".gitignore")
 
-	gitignorePath = dt.FilepathJoin(repoRoot, ".gitignore")
 	err = appendPatternsToFile(gitignorePath, patterns)
 	if err != nil {
 		err = NewErr(ErrAppendToGitignore, err,
@@ -91,8 +90,14 @@ end:
 // Patterns should be repo-root-relative paths (e.g., ".idea/", ".vscode/").
 func AppendToGitExclude(repoRoot dt.DirPath, patterns []string) (err error) {
 	var excludePath dt.Filepath
+	var infoDir dt.DirPath
 
-	excludePath = dt.FilepathJoin(repoRoot, ".git/info/exclude")
+	infoDir, err = InfoDir(context.Background(), repoRoot)
+	if err != nil {
+		err = NewErr(ErrAppendToGitExclude, err)
+		goto end
+	}
+	excludePath = dt.FilepathJoin(infoDir, "exclude")
 	err = appendPatternsToFile(excludePath, patterns)
 	if err != nil {
 		err = NewErr(ErrAppendToGitExclude, err,
@@ -175,7 +180,9 @@ func appendPatternsToFile(filePath dt.Filepath, patterns []string) (err error) {
 	if err != nil {
 		goto end
 	}
-	defer f.Close()
+	defer func() {
+		err = CombineErrs([]error{err, f.Close()})
+	}()
 
 	// Ensure file ends with newline before appending
 	if len(existingContent) > 0 && existingContent[len(existingContent)-1] != '\n' {

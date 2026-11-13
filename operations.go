@@ -55,11 +55,8 @@ func (s Streamer) StageModuleFiles(moduleDir dt.DirPath) (err error) {
 	// Unstage everything first
 	cmd = exec.Command("git", "restore", "--staged", ".")
 	cmd.Dir = string(moduleDir)
-	err = cmd.Run()
-	if err != nil {
-		// Ignore error if there's nothing staged
-		err = nil
-	}
+	// Ignore the error; restore fails when nothing is staged
+	_ = cmd.Run()
 
 	// Get all files with changes (modified, added, deleted, untracked)
 	cmd = exec.Command("git", "status", "--porcelain")
@@ -119,9 +116,8 @@ end:
 
 // UnstageAll unstages all files in the module directory
 func (s Streamer) UnstageAll(moduleDir dt.DirPath) (err error) {
-	var cmd *exec.Cmd
+	var cmd = exec.Command("git", "restore", "--staged", ".")
 
-	cmd = exec.Command("git", "restore", "--staged", ".")
 	cmd.Dir = string(moduleDir)
 	err = cmd.Run()
 	if err != nil {
@@ -138,9 +134,8 @@ end:
 
 // Commit commits staged changes with the given message
 func (s Streamer) Commit(moduleDir dt.DirPath, message string) (err error) {
-	var cmd *exec.Cmd
+	var cmd = exec.Command("git", "commit", "-m", message)
 
-	cmd = exec.Command("git", "commit", "-m", message)
 	cmd.Dir = string(moduleDir)
 	cmd.Stdout = s.Stdout
 	cmd.Stderr = s.Stderr

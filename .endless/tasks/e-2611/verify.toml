@@ -1,0 +1,42 @@
+# ── DO NOT EDIT ─────────────────────────────────────────────────────
+# This suite belongs to E-2611 and records what was true when E-2611
+# landed. Edit it only if you ARE E-2611. If your change breaks a check
+# here, leave it alone — see .endless/tasks/CLAUDE.md.
+schema = 1
+task   = "E-2611"
+
+[[check]]
+name   = "root module tests (diff parser)"
+runner = "gotest"
+paths  = ["./..."]
+
+[[check]]
+name   = "worktree tests carried from gomion (InfoDir, InfoStore, OpenRepo remote)"
+runner = "gotest"
+dir    = "test"
+paths  = ["./..."]
+
+[[check]]
+name = "both modules build and vet without go.work"
+sh   = "GOWORK=off go build ./... && GOWORK=off go vet ./... && cd test && GOWORK=off go vet ./..."
+
+[[check]]
+name     = "both modules lint clean"
+sh       = "GOWORK=off golangci-lint run ./... 2>&1 && cd test && GOWORK=off golangci-lint run ./... 2>&1"
+not_contains = "issues:"
+
+[[check]]
+name   = "root go.mod: Go 1.27, published deps, no replace"
+sh     = "grep -qx 'go 1.27.0' go.mod && grep -q 'go-diffutils v0.1.0' go.mod && ! grep -q '^replace' go.mod"
+
+[[check]]
+name = "gomion's changes are present"
+sh   = "grep -q '^func InfoDir(' info_store.go && grep -q 'InfoDir(context.Background(), s.RepoPath)' info_store.go && grep -q 'InfoDir(context.Background(), repoRoot)' ignored_files.go && grep -q 'upstream:remotename' repo.go"
+
+[[check]]
+name = "worktree.go is untouched by this task"
+sh   = "git diff --quiet $(git merge-base main HEAD) HEAD -- worktree.go"
+
+[[check]]
+name = "gitignore covers /bin/ and go.work"
+sh   = "grep -qx '/bin/' .gitignore && grep -qx 'go.work' .gitignore"

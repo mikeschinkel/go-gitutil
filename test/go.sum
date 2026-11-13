@@ -1,0 +1,8 @@
+github.com/mikeschinkel/go-diffutils v0.1.0 h1:7m39zbdT787wRSW9ExFBngBY7VyZZypz56zgXQFLkMQ=
+github.com/mikeschinkel/go-diffutils v0.1.0/go.mod h1:oPuj2k5oC4GAm60dSGnKDorv9nb1MVK6eDJ0iqnbPgM=
+github.com/mikeschinkel/go-dt v0.7.1 h1:u5wfbp4OcCCynpaAtNZaMNElD6bKgJZvZKGp/F8yO64=
+github.com/mikeschinkel/go-dt v0.7.1/go.mod h1:qyJVqkNO1uNSXs7S7X+ZaG8ErT5Hp33iuN0K8/rwjcU=
+github.com/mikeschinkel/go-dt/dtx v0.3.0 h1:l79W8TEsP0qAbkAN17WAM64A8LCFRyvBVrIUYKvRbtY=
+github.com/mikeschinkel/go-dt/dtx v0.3.0/go.mod h1:pYiPW8ae5JJPLWihw9gBt8xrMrWB7wrT3A7t4HSznz0=
+golang.org/x/mod v0.20.0 h1:utOm6MM3R3dnawAiJgn0y+xvuYRsm1RKM/4giyfDgV0=
+golang.org/x/mod v0.20.0/go.mod h1:hTbmBsO62+eylJbnUtE2MGJUyE7QWk4xUqPFrRgJ+7c=

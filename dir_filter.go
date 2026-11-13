@@ -9,12 +9,8 @@ import (
 // the specified directory moduleRelPath should be relative to the git
 // repo root (e.g., "gommod" or ".")
 func CreateDirPathFilter(dirPath dt.RelDirPath) (ff FileFilter) {
-	switch {
-	case dirPath == "":
-		dirPath = "."
-		fallthrough
-
-	case dirPath == ".":
+	switch dirPath {
+	case "", ".":
 		// If path is current directory, all files match
 		ff = func(file dt.RelFilepath) bool {
 			return true
@@ -41,8 +37,8 @@ func CreateDirPathFilter(dirPath dt.RelDirPath) (ff FileFilter) {
 // 2. Files at the repo root (not in any subdirectory)
 // This ensures repo-level files like README.md are included along with module files.
 func CreateModuleFilter(dirPath dt.RelDirPath) (ff FileFilter) {
-	switch {
-	case dirPath == "" || dirPath == ".":
+	switch dirPath {
+	case "", ".":
 		// If path is repo root, all files match
 		return func(file dt.RelFilepath) bool {
 			return true

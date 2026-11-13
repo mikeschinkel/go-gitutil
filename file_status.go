@@ -13,7 +13,7 @@ import (
 type FileStatus struct {
 	StagedChange   StatusChangeType // Status in index (position 0)
 	UnstagedChange StatusChangeType // Status in working tree (position 1)
-	Staging        Staging    // Derived staging state
+	Staging        Staging          // Derived staging state
 }
 
 func NewFileStatus() FileStatus {

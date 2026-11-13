@@ -37,6 +37,7 @@ func OpenRepo(ctx context.Context, dir dt.DirPath) (repo *Repo, err error) {
 	root = dt.DirPath(bytes.TrimSpace(out))
 	if root == "" {
 		err = ErrNotGitRepo
+		goto end
 	}
 	repo = &Repo{
 		Root: root,
@@ -152,24 +153,32 @@ end:
 	return ref, err
 }
 
-// currentRenote the name of the upstream Remote (typically "origin")
+// currentRemote returns the remote and remote branch the current branch tracks,
+// or a zero GitRemote when it tracks none: a branch that was never pushed, or a
+// detached HEAD. A missing upstream is not an error; callers fall back to a
+// default remote name.
 func (r *Repo) currentRemote(ctx context.Context) (remote GitRemote, err error) {
 	var out string
-	var parts []string
+	var fields []string
 
-	out, err = r.runGit(ctx, r.Root, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+	if r.Branch == "" || r.Branch == "HEAD" {
+		goto end
+	}
+	out, err = r.runGit(ctx, r.Root, "for-each-ref",
+		"--format=%(upstream:remotename) %(upstream:remoteref)",
+		"refs/heads/"+string(r.Branch),
+	)
 	if err != nil {
 		goto end
 	}
-	remote = GitRemote{}
-	// Output is like "origin/main", extract "origin"
-	parts = strings.Split(strings.TrimSpace(out), "/")
-	switch len(parts) {
-	case 1:
-		remote.Name = RemoteName(parts[0])
-		fallthrough
-	case 2:
-		remote.Branch = GitRef(parts[1])
+	// Output is like "origin refs/heads/main", or blank with no upstream.
+	fields = strings.Fields(out)
+	if len(fields) != 2 {
+		goto end
+	}
+	remote = GitRemote{
+		Name:   RemoteName(fields[0]),
+		Branch: GitRef(strings.TrimPrefix(fields[1], "refs/heads/")),
 	}
 end:
 	return remote, err
