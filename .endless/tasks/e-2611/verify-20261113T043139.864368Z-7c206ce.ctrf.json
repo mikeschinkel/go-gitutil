@@ -1,0 +1,426 @@
+{
+  "reportFormat": "CTRF",
+  "specVersion": "0.2.0",
+  "results": {
+    "tool": {
+      "name": "endless"
+    },
+    "summary": {
+      "tests": 39,
+      "passed": 39,
+      "failed": 0,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0,
+      "start": 1794544296640,
+      "stop": 1794544299863
+    },
+    "tests": [
+      {
+        "name": "go.mod is tidy without go.work",
+        "status": "passed",
+        "duration": 0,
+        "labels": {
+          "check": "go.mod is tidy without go.work"
+        }
+      },
+      {
+        "name": "go.mod is tidy without go.work (test)",
+        "status": "passed",
+        "duration": 0,
+        "labels": {
+          "check": "go.mod is tidy without go.work (test)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/BasicHeader",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/HeaderWithFunctionName",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/SingleLineOld",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/SingleLineNew",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/BothSingleLine",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/InvalidHeader",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/MissingAtSigns",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_SingleFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_MultipleFiles",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_NewFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_DeletedFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_EmptyDiff",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestComputeHunkChecksum",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestComputeFileChecksum",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String/context",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String/added",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String/removed",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_AddedLines",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_DeletedLines",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_MixedChanges",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestBlockChangeType_String/added",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestBlockChangeType_String/deleted",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestBlockChangeType_String",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_EmptyFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestInfoDir_ResolvesInWorktree",
+        "status": "passed",
+        "duration": 100,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "worktree tests carried from gomion (InfoDir, InfoStore, OpenRepo remote)"
+        }
+      },
+      {
+        "name": "TestInfoStore_SaveLoadInWorktree",
+        "status": "passed",
+        "duration": 70,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "worktree tests carried from gomion (InfoDir, InfoStore, OpenRepo remote)"
+        }
+      },
+      {
+        "name": "TestOpenRepo_Remote/tracks_origin/main",
+        "status": "passed",
+        "duration": 10,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "worktree tests carried from gomion (InfoDir, InfoStore, OpenRepo remote)"
+        }
+      },
+      {
+        "name": "TestOpenRepo_Remote/no_upstream",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "worktree tests carried from gomion (InfoDir, InfoStore, OpenRepo remote)"
+        }
+      },
+      {
+        "name": "TestOpenRepo_Remote",
+        "status": "passed",
+        "duration": 100,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "worktree tests carried from gomion (InfoDir, InfoStore, OpenRepo remote)"
+        }
+      },
+      {
+        "name": "both modules build and vet without go.work",
+        "status": "passed",
+        "duration": 302,
+        "labels": {
+          "check": "both modules build and vet without go.work"
+        }
+      },
+      {
+        "name": "both modules lint clean",
+        "status": "passed",
+        "duration": 2739,
+        "labels": {
+          "check": "both modules lint clean"
+        }
+      },
+      {
+        "name": "root go.mod: Go 1.27, published deps, no replace",
+        "status": "passed",
+        "duration": 9,
+        "labels": {
+          "check": "root go.mod: Go 1.27, published deps, no replace"
+        }
+      },
+      {
+        "name": "gomion's changes are present",
+        "status": "passed",
+        "duration": 10,
+        "labels": {
+          "check": "gomion's changes are present"
+        }
+      },
+      {
+        "name": "worktree.go is untouched by this task",
+        "status": "passed",
+        "duration": 13,
+        "labels": {
+          "check": "worktree.go is untouched by this task"
+        }
+      },
+      {
+        "name": "gitignore covers /bin/ and go.work",
+        "status": "passed",
+        "duration": 6,
+        "labels": {
+          "check": "gitignore covers /bin/ and go.work"
+        }
+      }
+    ]
+  }
+}
