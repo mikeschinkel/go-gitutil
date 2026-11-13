@@ -176,3 +176,8 @@ statement = "ensureSafeCacheRepoDir checks the cache repo's .git directory, whic
 id = "P66"
 kind = "deliverable"
 statement = "dev_other.go's ensureSameFilesystem takes dt.DirPath, so the package builds on non-unix platforms"
+
+[[item]]
+id = "P67"
+kind = "deliverable"
+statement = "The current branch is read with git symbolic-ref, so Open works on an unborn branch and a detached HEAD yields an empty Branch instead of HEAD"
