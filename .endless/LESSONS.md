@@ -24,3 +24,7 @@ In E-2548 Mike asked for a note that the outcome is what we best understand and 
 ### [2026-11-12] A choice that shapes one task's implementation is a task decision for its plan or analysis, even when the user made it; file a decision in the project it binds
 In E-2548 I filed four decisions; Mike rejected three as task-level (the Repo API shape with optional StdIO, where fixture constants live) or as a platitude (Go-module knowledge not in go-gitutil, 'water is wet'), and moved the fourth (singular util names across go-pkgs) to gomion because a cross-repo convention belongs where the ecosystem is managed, not in the repo where it came up. Rule: before filing, ask whether the statement would still bind if the task were deleted and whether anyone would argue the other side; a design the user chose for one package's API fails the first test and goes in the implementing task's analysis.
 - **Project**: go-gitutil
+
+### [2026-11-12] Extracting a package into a new repo is three tasks: create the project first, extract in the new project, replace in the consumer
+In E-2548 I filed one gomion task 'Extract gommod/goutils into go-goutil'. Mike split it: create the go-goutil project first, a go-goutil task to extract the package, a gomion task to replace the local copy with the import. Rule: an extraction crosses two projects, so the work lives in each project's own task, and the destination project must exist before its task can be filed.
+- **Project**: go-gitutil
