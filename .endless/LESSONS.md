@@ -32,3 +32,7 @@ In E-2548 I filed one gomion task 'Extract gommod/goutils into go-goutil'. Mike 
 ### [2026-11-12] A command you hand the user to run must have been checked against its preconditions; project init needs a repo with at least one commit
 In E-2548 I gave Mike a one-liner to git init an empty directory and run endless project init. He had to add a README and commit first before project init would run, and told me the instruction was insufficient. Rule: before handing the user a command, check what it requires (an existing commit, a file, a registered project) by reading its help or trying the equivalent where allowed, and include those steps in the command.
 - **Project**: go-gitutil
+
+### [2026-11-12] In an Endless worktree, go.mod ../ replaces don't resolve; drop them or the verify tidy row fails
+Worktrees sit at <repo>/.endless/worktrees/e-NNNN, so a go.mod replace like ../go-dt points at .endless/worktrees/go-dt, which does not exist. endless task verify always runs a built-in 'go mod tidy -diff' under GOWORK=off, so any module with ../ replaces fails verify from a worktree. Also, an untracked go.work in the worktree makes verify refuse as uncommitted; go.work must be gitignored. In E-2611 (go-gitutil) the fix was requiring published versions with no replace (the go-pkgs rule anyway) and gitignoring go.work/go.work.sum.
+- **Project**: go-gitutil
