@@ -28,3 +28,7 @@ In E-2548 I filed four decisions; Mike rejected three as task-level (the Repo AP
 ### [2026-11-12] Extracting a package into a new repo is three tasks: create the project first, extract in the new project, replace in the consumer
 In E-2548 I filed one gomion task 'Extract gommod/goutils into go-goutil'. Mike split it: create the go-goutil project first, a go-goutil task to extract the package, a gomion task to replace the local copy with the import. Rule: an extraction crosses two projects, so the work lives in each project's own task, and the destination project must exist before its task can be filed.
 - **Project**: go-gitutil
+
+### [2026-11-12] A command you hand the user to run must have been checked against its preconditions; project init needs a repo with at least one commit
+In E-2548 I gave Mike a one-liner to git init an empty directory and run endless project init. He had to add a README and commit first before project init would run, and told me the instruction was insufficient. Rule: before handing the user a command, check what it requires (an existing commit, a file, a registered project) by reading its help or trying the equivalent where allowed, and include those steps in the command.
+- **Project**: go-gitutil
