@@ -186,3 +186,8 @@ statement = "The current branch is read with git symbolic-ref, so Open works on 
 id = "P68"
 kind = "deliverable"
 statement = "GitRunner, an exported type with no exported methods, is deleted along with its separate run path"
+
+[[item]]
+id = "P69"
+kind = "deliverable"
+statement = "CommitsSinceTag, CommitsBetweenTags and CommitsOnBranch share one commitLog parser and all wrap ErrCommitLog"
