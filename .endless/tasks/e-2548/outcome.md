@@ -148,10 +148,10 @@ clear one.
   decisions.
 - E-2602 (go-gitutil): Create go-gitutil's test module on go-fsfix fixtures.
   Blocked by E-2600 and E-2568.
-- go-goutil extraction, three parts: Mike created go-pkgs/go-goutil
-  on 2026-11-12 (project registration pending); a go-goutil task to extract
-  gommod/goutils into it (filed once the project is registered); E-2601
-  (gomion): Replace gommod/goutils with go-goutil.
+- go-goutil extraction, three parts: Mike created and registered the
+  go-goutil project on 2026-11-12; E-2608 (go-goutil) extracts gommod/goutils
+  into it as package goutil; E-2601 (gomion) then replaces the local copy with
+  the import. E-2608 blocks E-2601.
 - E-2607 (gomion, research): Survey go-pkgs for plural util names to rename,
   filing a rename task in each project that needs one (go-diffutils is a
   registered Endless project, so its rename task can be filed there directly).
@@ -162,3 +162,5 @@ clear one.
   UnstageAll and InfoStore, and StageModuleFiles is removed rather than carried
   over, so its remaining work is deleting gomion's copy and switching imports;
   the call-site rewrite is E-2601's.
+- E-2609 (endless): rename the `--git-hooks none` choice on project init, which
+  installs a plain Git hook rather than nothing.
