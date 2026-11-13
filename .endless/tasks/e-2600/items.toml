@@ -166,3 +166,8 @@ statement = "Does not tag or release go-gitutil"
 id = "P64"
 kind = "exclusion"
 statement = "Does not move diff_parser_test.go into the test/ module"
+
+[[item]]
+id = "P65"
+kind = "deliverable"
+statement = "ensureSafeCacheRepoDir checks the cache repo's .git directory, which it previously never checked (Filepath.Exists is false for a directory and the condition was inverted), and a test covers OpenCachedWorktree"
