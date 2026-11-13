@@ -32,3 +32,8 @@ statement = "go-gitutil lints clean with golangci-lint v2.15.0; the 11 pre-exist
 id = "P6"
 kind = "deliverable"
 statement = "go.mod says go 1.27.0, requires published go-diffutils v0.1.0, go-dt v0.7.1 and go-dt/dtx v0.3.0, and has no replace directive (E-2529 step 3, folded in)"
+
+[[item]]
+id = "P7"
+kind = "deliverable"
+statement = "A test/ module holds gomion's worktree tests (InfoDir, InfoStore in a worktree, OpenRepo remote), written against the exported API"
