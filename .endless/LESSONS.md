@@ -40,3 +40,7 @@ Worktrees sit at <repo>/.endless/worktrees/e-NNNN, so a go.mod replace like ../g
 ### [2026-11-13] Mike's Args convention: one Args, last parameter
 Planning go-gitutil E-2600, I recommended adding RepoArgs as an extra parameter to the package-level Init/Clone/Open (Init(ctx, dir, RepoArgs, InitArgs)). Mike rejected it: across his packages a function takes at most one Args struct and it is the last parameter. When a function needs settings from two Args structs, embed one in the other (InitArgs embeds RepoArgs) instead of adding a second Args parameter.
 - **Project**: go-gitutil
+
+### [2026-11-13] Check whether a default removes a con before listing it
+Planning go-gitutil E-2600 Q1, I listed 'a caller wanting one identity sets it twice' as a con of separate Author/Committer fields. Mike pointed out that a missing Committer can default to Author (and CommitterDate to AuthorDate), so the con disappears. Before listing a con, check whether a sensible default or zero-value rule removes it. Prefer zero values (dt.Mailbox with empty Email, time.Time.IsZero) to pointers for detecting an unset field.
+- **Project**: go-gitutil
