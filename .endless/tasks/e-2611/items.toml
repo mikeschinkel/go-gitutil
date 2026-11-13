@@ -27,3 +27,8 @@ statement = "Does not touch worktree.go"
 id = "P5"
 kind = "deliverable"
 statement = "go-gitutil lints clean with golangci-lint v2.15.0; the 11 pre-existing findings are fixed, including a missing goto end in OpenRepo, so the four carried files differ from gomion's only by those lint fixes"
+
+[[item]]
+id = "P6"
+kind = "deliverable"
+statement = "go.mod says go 1.27.0, requires published go-diffutils v0.1.0, go-dt v0.7.1 and go-dt/dtx v0.3.0, and has no replace directive (E-2529 step 3, folded in)"
