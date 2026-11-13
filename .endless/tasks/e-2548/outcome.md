@@ -116,7 +116,7 @@ go-goutil." So:
   is not an Endless project; Mike files that where he tracks it.
 - Git domain types (branch name, revision, object id) live in go-dt's root
   package with a `Git` prefix (`GitRefName`, `GitRevision`, `GitObjectID`),
-  filed as E-2599 in go-dt. go-gitutil's `GitRef` and `RemoteName` move to
+  filed as E-2599 in go-dt, where Mike settled the names on 2026-11-12: `GitRef`, `GitBranchName`, `GitTagName`, `GitRemoteName`, `GitRevision`, `GitObjectID`. go-gitutil's `GitRef` (a revision in use) maps to `GitRevision` and `RemoteName` to `GitRemoteName`, in
   those types in its implementation task.
 
 ## Tests (Q6)
