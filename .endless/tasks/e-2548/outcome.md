@@ -4,6 +4,12 @@ Brainstorm with Mike, 2026-11-11 and 2026-11-12, with answers relayed from the
 gomion (E-2546) and go-fsfix (E-2547/E-2568) sessions. Everything below is
 Mike's choice unless marked "proposed" (my proposal he accepted) or "fact".
 
+**This outcome is our best current understanding, not a specification.** It
+records what we knew and chose on 2026-11-12. Implementation (E-2600, E-2602,
+E-2568, E-2559) will learn things this discussion could not, and when it does
+the design evolves and this outcome is revised. Treat a deviation discovered
+during implementation as information, not as a breach.
+
 ## The operation set
 
 go-gitutil gains four operations for fixtures and gomion, all on `Repo`:
@@ -123,29 +129,36 @@ go-goutil." So:
   managing go.work across directories) and endless E-1192 (go.work generation
   as a standalone tool).
 
-## The "decoy" files, explained
+## The negative test cases (formerly "decoy" files)
 
-The term came from the E-2546 session, not Mike. gomion's repo_setup_test.go
-fixture places `go.mod` files at `dtx/testdata/x/go.mod` and
-`.endless/worktrees/a/go.mod`, with module paths literally `ignored/testdata`
-and `ignored/endless`. They are negative cases: gomion's layout classifier
-must not treat them as modules. They must be committed because gomion reads
-tracked files only ("An untracked go.mod is invisible to CI, so it is
-invisible here too"). Better name: excluded-path go.mod files.
+gomion's repo_setup_test.go fixture places `go.mod` files at
+`dtx/testdata/x/go.mod` and `.endless/worktrees/a/go.mod`, with module paths
+literally `ignored/testdata` and `ignored/endless`. They are negative test
+cases: gomion's layout classifier must not treat them as modules. They must be
+committed because gomion reads tracked files only ("An untracked go.mod is
+invisible to CI, so it is invisible here too"), which is why the fixture adds
+with Force. "Decoy" was the E-2546 session's word; negative test cases is the
+clear one.
 
 ## Follow-ups filed
 
 - E-2600 (go-gitutil): Reshape Repo with Init, Clone, Add and Commit. Cleans up
-  E-2548; blocks E-2568, E-2559 and E-2556; relates to E-2599.
+  E-2548; blocks E-2568, E-2559 and E-2556; relates to E-2599. Its analysis
+  holds the API shape and the identity/StdIO rules above, as task-level
+  decisions.
 - E-2602 (go-gitutil): Create go-gitutil's test module on go-fsfix fixtures.
   Blocked by E-2600 and E-2568.
-- E-2601 (gomion): Extract gommod/goutils into go-goutil.
-- Decisions ED-1658 (singular util names), ED-1659 (Repo NewRepo/Open shape,
-  one type with optional StdIO), ED-1660 (Go-module knowledge in go-goutil),
-  ED-1661 (go-fsfix owns fixture defaults).
-- Not filed, for Mike: rename go-diffutils (not an Endless project). Revise
-  E-2556's description: go-gitutil already has Commit, UnstageAll and
-  InfoStore, StageModuleFiles is removed rather than carried over, so its
-  remaining work is deleting gomion's copy, switching imports, and rewriting
-  the three StageModuleFiles/UnstageAll/Commit call sites onto Repo methods
-  plus goutil.FindNestedModules.
+- go-goutil extraction, three parts: Mike created go-pkgs/go-goutil
+  on 2026-11-12 (project registration pending); a go-goutil task to extract
+  gommod/goutils into it (filed once the project is registered); E-2601
+  (gomion): Replace gommod/goutils with go-goutil.
+- E-2607 (gomion, research): Survey go-pkgs for plural util names to rename,
+  filing a rename task in each project that needs one (go-diffutils is a
+  registered Endless project, so its rename task can be filed there directly).
+- Decision ED-1662 (gomion): go-pkgs package names use singular util. Four
+  decisions first filed in go-gitutil (ED-1658 to ED-1661) were rejected as
+  task-level or misplaced; their content lives in E-2600's analysis and here.
+- For Mike: revise E-2556's description. go-gitutil already has Commit,
+  UnstageAll and InfoStore, and StageModuleFiles is removed rather than carried
+  over, so its remaining work is deleting gomion's copy and switching imports;
+  the call-site rewrite is E-2601's.
