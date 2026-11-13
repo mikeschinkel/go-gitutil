@@ -171,3 +171,8 @@ statement = "Does not move diff_parser_test.go into the test/ module"
 id = "P65"
 kind = "deliverable"
 statement = "ensureSafeCacheRepoDir checks the cache repo's .git directory, which it previously never checked (Filepath.Exists is false for a directory and the condition was inverted), and a test covers OpenCachedWorktree"
+
+[[item]]
+id = "P66"
+kind = "deliverable"
+statement = "dev_other.go's ensureSameFilesystem takes dt.DirPath, so the package builds on non-unix platforms"
