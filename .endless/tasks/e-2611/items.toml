@@ -22,3 +22,8 @@ statement = "Does not reshape Repo or add Init, Clone, Add or Commit; that is th
 id = "P4"
 kind = "exclusion"
 statement = "Does not touch worktree.go"
+
+[[item]]
+id = "P5"
+kind = "deliverable"
+statement = "go-gitutil lints clean with golangci-lint v2.15.0; the 11 pre-existing findings are fixed, including a missing goto end in OpenRepo, so the four carried files differ from gomion's only by those lint fixes"
