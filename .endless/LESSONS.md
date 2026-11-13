@@ -36,3 +36,7 @@ In E-2548 I gave Mike a one-liner to git init an empty directory and run endless
 ### [2026-11-12] In an Endless worktree, go.mod ../ replaces don't resolve; drop them or the verify tidy row fails
 Worktrees sit at <repo>/.endless/worktrees/e-NNNN, so a go.mod replace like ../go-dt points at .endless/worktrees/go-dt, which does not exist. endless task verify always runs a built-in 'go mod tidy -diff' under GOWORK=off, so any module with ../ replaces fails verify from a worktree. Also, an untracked go.work in the worktree makes verify refuse as uncommitted; go.work must be gitignored. In E-2611 (go-gitutil) the fix was requiring published versions with no replace (the go-pkgs rule anyway) and gitignoring go.work/go.work.sum.
 - **Project**: go-gitutil
+
+### [2026-11-13] Mike's Args convention: one Args, last parameter
+Planning go-gitutil E-2600, I recommended adding RepoArgs as an extra parameter to the package-level Init/Clone/Open (Init(ctx, dir, RepoArgs, InitArgs)). Mike rejected it: across his packages a function takes at most one Args struct and it is the last parameter. When a function needs settings from two Args structs, embed one in the other (InitArgs embeds RepoArgs) instead of adding a second Args parameter.
+- **Project**: go-gitutil
