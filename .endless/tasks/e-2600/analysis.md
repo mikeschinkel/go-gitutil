@@ -5,7 +5,7 @@ From E-2548's outcome:
 - Identity: local config at init/clone, GIT_AUTHOR_*/GIT_COMMITTER_* env at commit; unset means git resolves. Optional strict boolean refuses machine fallback; off by default. No baked-in defaults.
 - One run function (ctx, dir, env, stdin, dt.StdIO, args) behind GitRunner, Repo and creation ops; parsed-output ops always capture, human-output ops stream to StdIO when set. Streamer and the package-level Commit/StageModuleFiles/UnstageAll wrappers deleted. StageModuleFiles removed (Go-module knowledge goes to go-goutil); UnstageAll and StageFileContent stay as Repo methods.
 - cached_worktree.go uses the exported Clone.
-- GitRef and RemoteName move to go-dt's Git-prefixed types once E-2599 lands.
+- Type mapping onto go-dt (E-2599, settled by Mike 2026-11-12): go-dt defines GitRef, GitBranchName, GitTagName, GitRemoteName, GitRevision and GitObjectID. go-gitutil's current GitRef is used where git means a revision, so it maps to dt.GitRevision, not dt.GitRef; RemoteName maps to dt.GitRemoteName; InitArgs.Branch and CloneArgs.Branch are dt.GitBranchName; CreateTagArgs.TagName is dt.GitTagName; RevParse returns dt.GitObjectID.
 
 # Requirements from go-fsfix (E-2568's plan, relayed 2026-11-12)
 
