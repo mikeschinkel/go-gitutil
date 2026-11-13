@@ -48,7 +48,7 @@ verify = "test/ covers each of the four rules"
 [[item]]
 id = "P41"
 kind = "deliverable"
-statement = "With Strict, git runs with an environment built from nothing: an empty HOME, GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1, GIT_ALLOW_PROTOCOL=file, GIT_TERMINAL_PROMPT=0, then RepoArgs.Env, plus -c user.useConfigOnly=true"
+statement = "With Strict, git runs with an environment built from nothing: HOME set to the path of an empty directory go-gitutil creates and removes (never empty or unset), GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1, GIT_ALLOW_PROTOCOL=file, GIT_TERMINAL_PROMPT=0, then RepoArgs.Env, plus -c user.useConfigOnly=true"
 verify = "test/ sets a hostile HOME, GIT_DIR and GIT_AUTHOR_NAME and shows none reaches git; an https clone fails; a commit with no identity fails"
 
 [[item]]
