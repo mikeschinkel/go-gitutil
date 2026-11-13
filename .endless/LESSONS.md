@@ -44,3 +44,7 @@ Planning go-gitutil E-2600, I recommended adding RepoArgs as an extra parameter 
 ### [2026-11-13] Check whether a default removes a con before listing it
 Planning go-gitutil E-2600 Q1, I listed 'a caller wanting one identity sets it twice' as a con of separate Author/Committer fields. Mike pointed out that a missing Committer can default to Author (and CommitterDate to AuthorDate), so the con disappears. Before listing a con, check whether a sensible default or zero-value rule removes it. Prefer zero values (dt.Mailbox with empty Email, time.Time.IsZero) to pointers for detecting an unset field.
 - **Project**: go-gitutil
+
+### [2026-11-13] Use nil pointers, not zero-value rules, to mark an optional Args field as unset
+While planning E-2600 (go-gitutil CommitArgs), I proposed that a zero Committer/CommitterDate means 'copy Author/AuthorDate', relying on an empty dt.Mailbox.Email and time.Time.IsZero(). Mike rejected that: zero-value rules are fragile, the meaning of 'unset' differs per type and has to be learned field by field, so developers and AI agents misread it. A nil pointer means 'not given' to everyone. So, when an Args field's absence triggers a default, make it a pointer and default on nil.
+- **Project**: go-gitutil
