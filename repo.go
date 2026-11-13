@@ -1,11 +1,8 @@
-package gitutils
+package gitutil
 
 import (
-	"bytes"
 	"context"
-	"errors"
 	"fmt"
-	"os/exec"
 	"sort"
 	"strconv"
 	"strings"
@@ -14,70 +11,9 @@ import (
 	"golang.org/x/mod/semver"
 )
 
-type GitRef string
-
-type Repo struct {
-	Root   dt.DirPath
-	Branch GitRef
-	Remote GitRemote
-}
-
-func OpenRepo(ctx context.Context, dir dt.DirPath) (repo *Repo, err error) {
-	var root dt.DirPath
-	var out []byte
-
-	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
-	cmd.Dir = string(dir)
-	out, err = cmd.Output()
-	if err != nil {
-		err = NewErr(ErrNotGitRepo, err)
-		goto end
-	}
-
-	root = dt.DirPath(bytes.TrimSpace(out))
-	if root == "" {
-		err = ErrNotGitRepo
-		goto end
-	}
-	repo = &Repo{
-		Root: root,
-	}
-
-	// Get current branch
-	repo.Branch, err = repo.currentBranch(ctx)
-	if err != nil {
-		goto end
-	}
-
-	// Get Remote name
-	repo.Remote, err = repo.currentRemote(ctx)
-	if err != nil {
-		goto end
-	}
-
-end:
-	if err != nil {
-		err = WithErr(err, dir.ErrKV())
-	}
-	return repo, err
-}
-
-func (r *Repo) RevParse(ctx context.Context, ref string) (string, error) {
-	out, err := r.runGit(ctx, r.Root, "rev-parse", ref)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(out), nil
-}
-
-// Status returns git status output
-// By default returns machine-readable format (--porcelain)
-// If args.HumanReadable is true, returns human-readable format
-// If args.Path is provided, status is scoped to that path
-func (r *Repo) Status(ctx context.Context, args *StatusArgs) (output string, err error) {
-	return Status(ctx, r.Root, args)
-}
-
+// FilesMap returns the porcelain status of the working tree parsed into a
+// FilesMap.
+// It does not need Open.
 func (r *Repo) FilesMap(ctx context.Context, args *StatusArgs) (m FilesMap, err error) {
 	var output string
 	if args == nil {
@@ -99,6 +35,8 @@ end:
 	return m, err
 }
 
+// IsDirty reports whether the working tree has uncommitted changes.
+// It does not need Open.
 func (r *Repo) IsDirty(ctx context.Context) (bool, error) {
 	out, err := r.Status(ctx, nil)
 	if err != nil {
@@ -108,6 +46,7 @@ func (r *Repo) IsDirty(ctx context.Context) (bool, error) {
 }
 
 // IsDirtyInPath checks if there are uncommitted changes within a specific path
+// It does not need Open.
 func (r *Repo) IsDirtyInPath(ctx context.Context, relPath dt.PathSegments) (bool, error) {
 	out, err := r.Status(ctx, &StatusArgs{Path: relPath})
 	if err != nil {
@@ -116,15 +55,18 @@ func (r *Repo) IsDirtyInPath(ctx context.Context, relPath dt.PathSegments) (bool
 	return strings.TrimSpace(out) != "", nil
 }
 
+// UpstreamState returns how far the current branch is ahead of and behind
+// its upstream. It reads the upstream from git (@{u}).
+// It does not need Open.
 func (r *Repo) UpstreamState(ctx context.Context) (us UpstreamState, err error) {
 	var out string
 	var fields []string
 
-	_, err = r.runGit(ctx, r.Root, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+	_, err = r.runGit(ctx, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
 	if err != nil {
 		goto end
 	}
-	out, err = r.runGit(ctx, r.Root, "rev-list", "--left-right", "--count", "HEAD...@{u}")
+	out, err = r.runGit(ctx, "rev-list", "--left-right", "--count", "HEAD...@{u}")
 	if err != nil {
 		goto end
 	}
@@ -141,73 +83,30 @@ end:
 	return us, err
 }
 
-// currentBranch returns the name of the current branch
-func (r *Repo) currentBranch(ctx context.Context) (ref GitRef, err error) {
-	var branch string
-	branch, err = r.runGit(ctx, r.Root, "rev-parse", "--abbrev-ref", "HEAD")
-	if err != nil {
-		goto end
-	}
-	ref = GitRef(strings.TrimSpace(branch))
-end:
-	return ref, err
-}
-
-// currentRemote returns the remote and remote branch the current branch tracks,
-// or a zero GitRemote when it tracks none: a branch that was never pushed, or a
-// detached HEAD. A missing upstream is not an error; callers fall back to a
-// default remote name.
-func (r *Repo) currentRemote(ctx context.Context) (remote GitRemote, err error) {
-	var out string
-	var fields []string
-
-	if r.Branch == "" || r.Branch == "HEAD" {
-		goto end
-	}
-	out, err = r.runGit(ctx, r.Root, "for-each-ref",
-		"--format=%(upstream:remotename) %(upstream:remoteref)",
-		"refs/heads/"+string(r.Branch),
-	)
-	if err != nil {
-		goto end
-	}
-	// Output is like "origin refs/heads/main", or blank with no upstream.
-	fields = strings.Fields(out)
-	if len(fields) != 2 {
-		goto end
-	}
-	remote = GitRemote{
-		Name:   RemoteName(fields[0]),
-		Branch: GitRef(strings.TrimPrefix(fields[1], "refs/heads/")),
-	}
-end:
-	return remote, err
-}
-
 // CurrentRemoteURL returns the push URL of the current remote
-// Tries get-url first, falls back to parsing remote -v output
+// Tries get-url first, falls back to parsing remote -v output.
+// It needs Open.
 func (r *Repo) CurrentRemoteURL(ctx context.Context) (url dt.URL, err error) {
-	var remoteName string
+	var remote dt.GitRemoteName
 	var out string
 	var lines []string
 	var fields []string
 	var u string
 
-	// Use remote name from Repo if available, otherwise default to first remote
-	remoteName = DefaultRemote // origin
-	if r.Remote.Name != "" {
-		remoteName = string(r.Remote.Name)
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
 
 	// Try get-url first (simpler, but may not work on all git versions)
-	u, err = r.runGit(ctx, r.Root, "remote", "get-url", remoteName)
+	u, err = r.runGit(ctx, "remote", "get-url", string(remote))
 	if err == nil && strings.TrimSpace(u) != "" {
 		url, err = dt.ParseURL(strings.TrimSpace(u))
 		goto end
 	}
 
 	// Fall back to parsing remote -v output
-	out, err = r.runGit(ctx, r.Root, "remote", "-v")
+	out, err = r.runGit(ctx, "remote", "-v")
 	if err != nil {
 		goto end
 	}
@@ -232,13 +131,16 @@ end:
 	return url, err
 }
 
-// StatusCounts returns counts of staged, unstaged, and untracked files
+// StatusCounts holds counts of staged, unstaged, and untracked files.
 type StatusCounts struct {
 	Staged    int
 	Unstaged  int
 	Untracked int
 }
 
+// StatusCounts returns counts of staged, unstaged, and untracked files,
+// scoped and filtered by args.
+// It does not need Open.
 func (r *Repo) StatusCounts(ctx context.Context, args *StatusArgs) (counts StatusCounts, err error) {
 	var out string
 	var lines []string
@@ -323,18 +225,16 @@ end:
 	return counts, err
 }
 
-// FetchTags fetches all tags from the remote repository
-func (r *Repo) FetchTags(ctx context.Context) error {
-	var remoteName string
+// FetchTags fetches all tags from the current branch's remote. It needs Open.
+func (r *Repo) FetchTags(ctx context.Context) (err error) {
+	var remote dt.GitRemoteName
 
-	// Get remote name (typically "origin")
-	if r.Remote.Name != "" {
-		remoteName = string(r.Remote.Name)
-	} else {
-		remoteName = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
-
-	_, err := r.runGit(ctx, r.Root, "fetch", "--tags", remoteName)
+	_, err = r.streamGit(ctx, "fetch", "--tags", string(remote))
+end:
 	return err
 }
 
@@ -344,8 +244,11 @@ func (r *Repo) toIntPtr(s string) (n *int) {
 	return n
 }
 
-func (r *Repo) Tags(ctx context.Context, prefix dt.PathSegments) (tags []string, err error) {
-	out, err := r.runGit(ctx, r.Root, "tag", "--list")
+// Tags returns local tags under prefix: tags with no "/" when prefix is
+// the root, or tags starting with prefix + "/" otherwise.
+// It does not need Open.
+func (r *Repo) Tags(ctx context.Context, prefix dt.PathSegments) (tags []dt.GitTagName, err error) {
+	out, err := r.runGit(ctx, "tag", "--list")
 	if err != nil {
 		goto end
 	}
@@ -365,25 +268,23 @@ func (r *Repo) Tags(ctx context.Context, prefix dt.PathSegments) (tags []string,
 		case !prefix.IsRoot() && !strings.HasPrefix(tag, string(prefix)+"/"):
 			continue
 		}
-		tags = append(tags, tag)
+		tags = append(tags, dt.GitTagName(tag))
 	}
 end:
 	return tags, err
 }
 
-// RemoteTags returns all tags from the remote repository
-func (r *Repo) RemoteTags(ctx context.Context, prefix dt.PathSegments) (tags []string, err error) {
+// RemoteTags returns all tags from the current branch's remote. It needs Open.
+func (r *Repo) RemoteTags(ctx context.Context, prefix dt.PathSegments) (tags []dt.GitTagName, err error) {
 	var out string
-	var remoteName string
+	var remote dt.GitRemoteName
 
-	// Get remote name (typically "origin")
-	if r.Remote.Name != "" {
-		remoteName = string(r.Remote.Name)
-	} else {
-		remoteName = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
 
-	out, err = r.runGit(ctx, r.Root, "ls-remote", "--tags", remoteName)
+	out, err = r.runGit(ctx, "ls-remote", "--tags", string(remote))
 	if err != nil {
 		goto end
 	}
@@ -425,7 +326,7 @@ func (r *Repo) RemoteTags(ctx context.Context, prefix dt.PathSegments) (tags []s
 			continue
 		}
 
-		tags = append(tags, tag)
+		tags = append(tags, dt.GitTagName(tag))
 	}
 
 end:
@@ -433,11 +334,11 @@ end:
 }
 
 // CompareRemoteTags checks if remote has newer tags than local
-// Returns: missingTags (tags on remote but not local), error
-func (r *Repo) CompareRemoteTags(ctx context.Context, prefix dt.PathSegments) (missingTags []string, err error) {
-	var localTags []string
-	var remoteTags []string
-	var localTagSet map[string]bool
+// Returns: missingTags (tags on remote but not local), error. It needs Open.
+func (r *Repo) CompareRemoteTags(ctx context.Context, prefix dt.PathSegments) (missingTags []dt.GitTagName, err error) {
+	var localTags []dt.GitTagName
+	var remoteTags []dt.GitTagName
+	var localTagSet map[dt.GitTagName]bool
 
 	localTags, err = r.Tags(ctx, prefix)
 	if err != nil {
@@ -450,7 +351,7 @@ func (r *Repo) CompareRemoteTags(ctx context.Context, prefix dt.PathSegments) (m
 	}
 
 	// Build set of local tags for fast lookup
-	localTagSet = make(map[string]bool, len(localTags))
+	localTagSet = make(map[dt.GitTagName]bool, len(localTags))
 	for _, tag := range localTags {
 		localTagSet[tag] = true
 	}
@@ -465,7 +366,7 @@ func (r *Repo) CompareRemoteTags(ctx context.Context, prefix dt.PathSegments) (m
 	// Sort missing tags (newest first if they're semver)
 	if len(missingTags) > 0 {
 		sort.Slice(missingTags, func(i, j int) bool {
-			return semver.Compare(missingTags[i], missingTags[j]) > 0
+			return semver.Compare(string(missingTags[i]), string(missingTags[j])) > 0
 		})
 	}
 
@@ -481,10 +382,11 @@ type LatestTagArgs struct {
 
 // LatestTag returns the latest reachable semver tag by default.
 // Passing non-default options is currently unsupported.
-func (r *Repo) LatestTag(ctx context.Context, headCommit string, args *LatestTagArgs) (latest string, err error) {
-	var semverTags []string
-	var reachable []string
-	var tags []string
+// It does not need Open.
+func (r *Repo) LatestTag(ctx context.Context, headCommit dt.GitRevision, args *LatestTagArgs) (latest dt.GitTagName, err error) {
+	var semverTags []dt.GitTagName
+	var reachable []dt.GitTagName
+	var tags []dt.GitTagName
 
 	switch {
 	case args == nil:
@@ -502,7 +404,7 @@ func (r *Repo) LatestTag(ctx context.Context, headCommit string, args *LatestTag
 	}
 
 	for _, tag := range tags {
-		if !semver.IsValid(tag) {
+		if !semver.IsValid(string(tag)) {
 			continue
 		}
 		semverTags = append(semverTags, tag)
@@ -514,7 +416,8 @@ func (r *Repo) LatestTag(ctx context.Context, headCommit string, args *LatestTag
 	}
 
 	for _, tag := range semverTags {
-		ok, err := r.isAncestor(r.Root, tag, headCommit)
+		var ok bool
+		ok, err = r.isAncestor(ctx, dt.GitRevision(tag), headCommit)
 		if err != nil {
 			goto end
 		}
@@ -528,46 +431,34 @@ func (r *Repo) LatestTag(ctx context.Context, headCommit string, args *LatestTag
 	}
 
 	sort.Slice(reachable, func(i, j int) bool {
-		return semver.Compare(reachable[i], reachable[j]) > 0
+		return semver.Compare(string(reachable[i]), string(reachable[j])) > 0
 	})
 	latest = reachable[0]
 end:
 	return latest, err
 }
 
-func (r *Repo) isAncestor(gitDir dt.DirPath, olderRef, newerRef string) (isAncestor bool, err error) {
-	var ok bool
-	var ee *exec.ExitError
-
-	cmd := exec.Command("git", "merge-base", "--is-ancestor", olderRef, newerRef)
-	cmd.Dir = string(gitDir)
-	err = cmd.Run()
-	if err == nil {
+// isAncestor reports whether older is an ancestor of newer.
+func (r *Repo) isAncestor(ctx context.Context, older, newer dt.GitRevision) (isAncestor bool, err error) {
+	_, err = r.runGit(ctx, "merge-base", "--is-ancestor", string(older), string(newer))
+	switch {
+	case err == nil:
 		isAncestor = true
-		goto end
+	case exitCode(err) == 1:
+		err = nil
 	}
-
-	ok = errors.As(err, &ee)
-	if !ok {
-		err = fmt.Errorf("git merge-base failed: %w", err)
-		goto end
-	}
-	if ee.ExitCode() != 1 {
-		err = fmt.Errorf("git merge-base failed with exit code %d: %w", ee.ExitCode(), err)
-		goto end
-	}
-
-end:
 	return isAncestor, err
 }
 
-func (r *Repo) DiffNameStatus(ctx context.Context, fromRef, toRef string, patterns ...string) (newLines []string, err error) {
+// DiffNameStatus returns git diff --name-status lines for fromRef..toRef.
+// It does not need Open.
+func (r *Repo) DiffNameStatus(ctx context.Context, fromRef, toRef dt.GitRevision, patterns ...string) (newLines []string, err error) {
 	var lines []string
 	var out string
 	var n int
 	args := []string{"diff", "--name-status", fmt.Sprintf("%s..%s", fromRef, toRef), "--"}
 	args = append(args, patterns...)
-	out, err = r.runGit(ctx, r.Root, args...)
+	out, err = r.runGit(ctx, args...)
 	if err != nil {
 		goto end
 	}
@@ -596,7 +487,8 @@ type DiffStatEntry struct {
 // DiffStatRange returns parsed file stats for the range fromRef..toRef, optionally
 // filtered by paths. Results are sorted by total changes (insertions+deletions) descending.
 // Binary files (shown as "-\t-\t<path>" by git) get Insertions=0, Deletions=0.
-func (r *Repo) DiffStatRange(ctx context.Context, fromRef, toRef string, paths []string) (entries []DiffStatEntry, err error) {
+// It does not need Open.
+func (r *Repo) DiffStatRange(ctx context.Context, fromRef, toRef dt.GitRevision, paths []string) (entries []DiffStatEntry, err error) {
 	var out string
 	var lines []string
 
@@ -606,7 +498,7 @@ func (r *Repo) DiffStatRange(ctx context.Context, fromRef, toRef string, paths [
 		args = append(args, paths...)
 	}
 
-	out, err = r.runGit(ctx, r.Root, args...)
+	out, err = r.runGit(ctx, args...)
 	if err != nil {
 		err = NewErr(ErrDiffStatRange, err)
 		goto end
@@ -644,10 +536,12 @@ end:
 	return entries, err
 }
 
-func (r *Repo) DiffNumStat(ctx context.Context, fromRef, toRef string, patterns ...string) ([]string, error) {
+// DiffNumStat returns git diff --numstat lines for fromRef..toRef.
+// It does not need Open.
+func (r *Repo) DiffNumStat(ctx context.Context, fromRef, toRef dt.GitRevision, patterns ...string) ([]string, error) {
 	args := []string{"diff", "--numstat", fmt.Sprintf("%s..%s", fromRef, toRef), "--"}
 	args = append(args, patterns...)
-	out, err := r.runGit(ctx, r.Root, args...)
+	out, err := r.runGit(ctx, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -662,12 +556,22 @@ func (r *Repo) DiffNumStat(ctx context.Context, fromRef, toRef string, patterns 
 	return lines, nil
 }
 
+// OpenCachedWorktree returns a locked clone of the repository in the user's
+// cache directory, refreshed from it. Close releases the lock. It needs Open,
+// because the cache clones the repository's top level.
 func (r *Repo) OpenCachedWorktree(ctx context.Context) (wt *CachedWorktree, err error) {
-	return openCachedWorktree(ctx, r)
+	err = r.requireOpen()
+	if err != nil {
+		goto end
+	}
+	wt, err = openCachedWorktree(ctx, r)
+end:
+	return wt, err
 }
 
 // GetChangedFiles returns all changed files in the working directory
 // This includes both staged and unstaged changes
+// It does not need Open.
 func (r *Repo) GetChangedFiles(ctx context.Context) (files []dt.RelFilepath, err error) {
 	var out string
 	var lines []string
@@ -709,6 +613,7 @@ end:
 
 // GetChangedFilesFiltered returns changed files matching the filter function
 // This includes both staged and unstaged changes, filtered by the provided function
+// It does not need Open.
 func (r *Repo) GetChangedFilesFiltered(ctx context.Context, filter FileFilter, _ *StatusArgs) (filtered []dt.RelFilepath, err error) {
 	var allFiles []dt.RelFilepath
 
@@ -736,6 +641,7 @@ end:
 
 // GetWorkingDiff returns the full diff of all changes in the working directory
 // This includes both staged and unstaged changes
+// It does not need Open.
 func (r *Repo) GetWorkingDiff(ctx context.Context) (diff string, err error) {
 	var stagedDiff string
 	var unstagedDiff string
@@ -747,7 +653,7 @@ func (r *Repo) GetWorkingDiff(ctx context.Context) (diff string, err error) {
 	}
 
 	// Get unstaged diff (working directory changes not in index)
-	unstagedDiff, err = r.runGit(ctx, r.Root, "diff")
+	unstagedDiff, err = r.runGit(ctx, "diff")
 	if err != nil {
 		goto end
 	}
@@ -765,104 +671,113 @@ end:
 	return diff, err
 }
 
-func (r *Repo) runGit(ctx context.Context, dir dt.DirPath, args ...string) (string, error) {
-	return newGitRunner(dir).runGit(ctx, runGitArgs{Command: args})
-}
-
 // CreateTagArgs provides arguments for CreateTag
 type CreateTagArgs struct {
-	TagName string // Required: tag name (e.g. "v1.2.3" or "gommod/v1.0.0")
-	Message string // Required: annotated tag message
-	Commit  string // Optional: commit to tag (defaults to HEAD)
+	TagName dt.GitTagName  // Required: tag name (e.g. "v1.2.3" or "gommod/v1.0.0")
+	Message string         // Required: annotated tag message
+	Commit  dt.GitRevision // Optional: commit to tag (defaults to HEAD)
 }
 
 // CreateTag creates an annotated git tag
+// It does not need Open.
 func (r *Repo) CreateTag(ctx context.Context, args CreateTagArgs) (err error) {
-	var commit string
+	var commit dt.GitRevision
 
 	commit = args.Commit
 	if commit == "" {
 		commit = "HEAD"
 	}
 
-	_, err = r.runGit(ctx, r.Root, "tag", "-a", args.TagName, "-m", args.Message, commit)
+	_, err = r.runGit(ctx, "tag", "-a", string(args.TagName), "-m", args.Message, string(commit))
 
 	return err
 }
 
-// Push pushes the current branch to the remote
+// remoteName returns the remote the current branch tracks, or DefaultRemote
+// when it tracks none. It returns ErrRepoNotOpen on an unopened Repo.
+func (r *Repo) remoteName() (remote dt.GitRemoteName, err error) {
+	err = r.requireOpen()
+	if err != nil {
+		goto end
+	}
+	remote = r.Remote.Name
+	if remote == "" {
+		remote = DefaultRemote
+	}
+end:
+	return remote, err
+}
+
+// Push pushes the current branch to its remote. It needs Open.
 func (r *Repo) Push(ctx context.Context) (output string, err error) {
-	var remote RemoteName
+	var remote dt.GitRemoteName
 
-	remote = r.Remote.Name
-	if remote == "" {
-		remote = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
-
-	output, err = r.runGit(ctx, r.Root, "push", string(remote), string(r.Branch))
-
+	output, err = r.streamGit(ctx, "push", string(remote), string(r.Branch))
+end:
 	return output, err
 }
 
-// PushAll pushes both code and tags to the remote
+// PushAll pushes the current branch and its tags to its remote. It needs
+// Open.
 func (r *Repo) PushAll(ctx context.Context) (output string, err error) {
-	var remote RemoteName
+	var remote dt.GitRemoteName
 
-	remote = r.Remote.Name
-	if remote == "" {
-		remote = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
-
-	output, err = r.runGit(ctx, r.Root, "push", string(remote), string(r.Branch), "--follow-tags")
-
+	output, err = r.streamGit(ctx, "push", string(remote), string(r.Branch), "--follow-tags")
+end:
 	return output, err
 }
 
-// PushTags pushes all tags to the remote
+// PushTags pushes all tags to the current branch's remote. It needs Open.
 func (r *Repo) PushTags(ctx context.Context) (output string, err error) {
-	var remote RemoteName
+	var remote dt.GitRemoteName
 
-	remote = r.Remote.Name
-	if remote == "" {
-		remote = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
-
-	output, err = r.runGit(ctx, r.Root, "push", "--tags", string(remote))
-
+	output, err = r.streamGit(ctx, "push", "--tags", string(remote))
+end:
 	return output, err
 }
 
-// PushTag pushes a tag to the remote
-func (r *Repo) PushTag(ctx context.Context, tagName string) (err error) {
-	var remote RemoteName
+// PushTag pushes a tag to the current branch's remote. It needs Open.
+func (r *Repo) PushTag(ctx context.Context, tag dt.GitTagName) (err error) {
+	var remote dt.GitRemoteName
 
-	remote = r.Remote.Name
-	if remote == "" {
-		remote = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
-
-	_, err = r.runGit(ctx, r.Root, "push", string(remote), tagName)
-
+	_, err = r.streamGit(ctx, "push", string(remote), string(tag.ToRef()))
+end:
 	return err
 }
 
-// DeleteTag deletes a local tag
-func (r *Repo) DeleteTag(ctx context.Context, tagName string) (err error) {
-	_, err = r.runGit(ctx, r.Root, "tag", "-d", tagName)
+// DeleteTag deletes a local tag. It does not need Open.
+func (r *Repo) DeleteTag(ctx context.Context, tag dt.GitTagName) (err error) {
+	_, err = r.runGit(ctx, "tag", "-d", string(tag))
 	return err
 }
 
-// DeleteRemoteTag deletes a remote tag
-func (r *Repo) DeleteRemoteTag(ctx context.Context, tagName string) (err error) {
-	var remote RemoteName
+// DeleteRemoteTag deletes a tag on the current branch's remote. It needs
+// Open.
+func (r *Repo) DeleteRemoteTag(ctx context.Context, tag dt.GitTagName) (err error) {
+	var remote dt.GitRemoteName
 
-	remote = r.Remote.Name
-	if remote == "" {
-		remote = "origin"
+	remote, err = r.remoteName()
+	if err != nil {
+		goto end
 	}
-
-	_, err = r.runGit(ctx, r.Root, "push", string(remote), ":refs/tags/"+tagName)
-
+	_, err = r.streamGit(ctx, "push", string(remote), ":"+string(tag.ToRef()))
+end:
 	return err
 }
 
@@ -870,175 +785,66 @@ func (r *Repo) DeleteRemoteTag(ctx context.Context, tagName string) (err error) 
 // Must not contain null bytes — OS rejects them in exec arguments.
 const commitRecordSep = "---COMMIT_RECORD_SEP---"
 
+// CommitLogEntry represents a single entry from git log
+type CommitLogEntry struct {
+	Hash       dt.GitObjectID // Full commit ID
+	Subject    string         // First line of commit message
+	Body       string         // Remaining commit message body (may be empty)
+	AuthorDate string         // ISO 8601 date
+}
+
 // CommitsSinceTag returns commits between a tag and HEAD, optionally filtered by paths.
-// Returns commits in reverse chronological order (newest first).
-func (r *Repo) CommitsSinceTag(ctx context.Context, fromTag string, paths []string) (entries []CommitLogEntry, err error) {
-	var out string
-	var records []string
+// Returns commits in reverse chronological order (newest first). It does
+// not need Open.
+func (r *Repo) CommitsSinceTag(ctx context.Context, fromTag dt.GitTagName, paths []string) ([]CommitLogEntry, error) {
+	return r.commitLog(ctx, string(fromTag)+"..HEAD", paths)
+}
 
-	// Build git log command
-	// Format: hash<TAB>subject<TAB>date<TAB>body<RECORD_SEP>
-	args := []string{
-		"log",
-		fromTag + "..HEAD",
-		"--format=%H\t%s\t%aI\t%b" + commitRecordSep,
-	}
+// CommitsBetweenTags returns commits between two tags (exclusive of fromTag, inclusive of toTag).
+// Returns commits in reverse chronological order (newest first). It does
+// not need Open.
+func (r *Repo) CommitsBetweenTags(ctx context.Context, fromTag, toTag dt.GitTagName, paths []string) ([]CommitLogEntry, error) {
+	return r.commitLog(ctx, string(fromTag)+".."+string(toTag), paths)
+}
 
-	// Add path filter if specified
-	if len(paths) > 0 {
-		args = append(args, "--")
-		args = append(args, paths...)
-	}
+// CommitsOnBranch returns commits unique to a branch (not on the current branch).
+// Returns commits in reverse chronological order (newest first). It reads
+// the current branch from git, so it does not need Open.
+func (r *Repo) CommitsOnBranch(ctx context.Context, branch dt.GitBranchName, paths []string) (entries []CommitLogEntry, err error) {
+	var current dt.GitBranchName
 
-	out, err = r.runGit(ctx, r.Root, args...)
+	current, err = r.currentBranch(ctx, nil)
 	if err != nil {
+		err = NewErr(ErrCommitLog, err)
 		goto end
 	}
-
-	out = strings.TrimSpace(out)
-	if out == "" {
-		goto end
+	if current == "" {
+		// Detached HEAD: compare against the commit HEAD is at.
+		current = "HEAD"
 	}
-
-	records = strings.Split(out, commitRecordSep)
-	entries = make([]CommitLogEntry, 0, len(records))
-	for _, record := range records {
-		record = strings.TrimSpace(record)
-		if record == "" {
-			continue
-		}
-		parts := strings.SplitN(record, "\t", 4)
-		if len(parts) < 3 {
-			continue
-		}
-		entry := CommitLogEntry{
-			Hash:       parts[0],
-			Subject:    parts[1],
-			AuthorDate: parts[2],
-		}
-		if len(parts) >= 4 {
-			entry.Body = strings.TrimSpace(parts[3])
-		}
-		entries = append(entries, entry)
-	}
-
+	entries, err = r.commitLog(ctx, string(current)+".."+string(branch), paths)
 end:
 	return entries, err
 }
 
-// CommitLogEntry represents a single entry from git log
-type CommitLogEntry struct {
-	Hash       string // Full commit hash
-	Subject    string // First line of commit message
-	Body       string // Remaining commit message body (may be empty)
-	AuthorDate string // ISO 8601 date
-}
-
-// CurrentBranch returns the name of the current branch.
-func (r *Repo) CurrentBranch(ctx context.Context) (ref GitRef, err error) {
-	return r.currentBranch(ctx)
-}
-
-// FilesChangedArgs provides arguments for FilesChanged.
-type FilesChangedArgs struct {
-	CommitHash string   // Required: the commit to inspect
-	Paths      []string // Optional: filter to these paths
-}
-
-// FilesChanged returns the list of files changed in a specific commit.
-func (r *Repo) FilesChanged(ctx context.Context, args FilesChangedArgs) (files []string, err error) {
-	var out string
-
-	gitArgs := []string{"diff-tree", "--no-commit-id", "--name-only", "-r", args.CommitHash}
-	if len(args.Paths) > 0 {
-		gitArgs = append(gitArgs, "--")
-		gitArgs = append(gitArgs, args.Paths...)
-	}
-
-	out, err = r.runGit(ctx, r.Root, gitArgs...)
-	if err != nil {
-		err = NewErr(ErrFilesChanged, err)
-		goto end
-	}
-
-	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-		files = append(files, line)
-	}
-
-end:
-	return files, err
-}
-
-// CommitDiff returns the full unified diff for a commit.
-// Runs: git show --format="" <hash>
-func (r *Repo) CommitDiff(ctx context.Context, hash string) (diff string, err error) {
-	diff, err = r.runGit(ctx, r.Root, "show", "--format=", hash)
-	if err != nil {
-		err = NewErr(ErrCommitDiff, err)
-		goto end
-	}
-	diff = strings.TrimSpace(diff)
-end:
-	return diff, err
-}
-
-// CommitFileDiff returns the diff for a single file in a commit.
-// Runs: git diff <hash>^..<hash> -- <path>
-func (r *Repo) CommitFileDiff(ctx context.Context, hash, path string) (diff string, err error) {
-	diff, err = r.runGit(ctx, r.Root, "diff", hash+"^.."+hash, "--", path)
-	if err != nil {
-		err = NewErr(ErrCommitFileDiff, err)
-		goto end
-	}
-	diff = strings.TrimSpace(diff)
-end:
-	return diff, err
-}
-
-// Branches returns all local branch names.
-func (r *Repo) Branches(ctx context.Context) (branches []string, err error) {
-	var out string
-
-	out, err = r.runGit(ctx, r.Root, "branch", "--list", "--format=%(refname:short)")
-	if err != nil {
-		err = NewErr(ErrBranches, err)
-		goto end
-	}
-
-	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
-		line = strings.TrimSpace(line)
-		if line == "" {
-			continue
-		}
-		branches = append(branches, line)
-	}
-
-end:
-	return branches, err
-}
-
-// CommitsBetweenTags returns commits between two tags (exclusive of fromTag, inclusive of toTag).
-// Returns commits in reverse chronological order (newest first).
-func (r *Repo) CommitsBetweenTags(ctx context.Context, fromTag, toTag string, paths []string) (entries []CommitLogEntry, err error) {
+// commitLog returns the commits in revRange, optionally filtered by paths,
+// newest first.
+func (r *Repo) commitLog(ctx context.Context, revRange string, paths []string) (entries []CommitLogEntry, err error) {
 	var out string
 	var records []string
+	var args []string
 
-	args := []string{
+	args = []string{
 		"log",
-		fromTag + ".." + toTag,
+		revRange,
 		"--format=%H\t%s\t%aI\t%b" + commitRecordSep,
 	}
-
 	if len(paths) > 0 {
 		args = append(args, "--")
 		args = append(args, paths...)
 	}
 
-	out, err = r.runGit(ctx, r.Root, args...)
+	out, err = r.runGit(ctx, args...)
 	if err != nil {
 		err = NewErr(ErrCommitLog, err)
 		goto end
@@ -1061,7 +867,7 @@ func (r *Repo) CommitsBetweenTags(ctx context.Context, fromTag, toTag string, pa
 			continue
 		}
 		entry := CommitLogEntry{
-			Hash:       parts[0],
+			Hash:       dt.GitObjectID(parts[0]),
 			Subject:    parts[1],
 			AuthorDate: parts[2],
 		}
@@ -1075,64 +881,85 @@ end:
 	return entries, err
 }
 
-// CommitsOnBranch returns commits unique to a branch (not on the current branch).
-// Returns commits in reverse chronological order (newest first).
-func (r *Repo) CommitsOnBranch(ctx context.Context, branch string, paths []string) (entries []CommitLogEntry, err error) {
+// FilesChangedArgs provides arguments for FilesChanged.
+type FilesChangedArgs struct {
+	CommitHash dt.GitRevision // Required: the commit to inspect
+	Paths      []string       // Optional: filter to these paths
+}
+
+// FilesChanged returns the list of files changed in a specific commit. It
+// does not need Open.
+func (r *Repo) FilesChanged(ctx context.Context, args FilesChangedArgs) (files []string, err error) {
 	var out string
-	var records []string
-	var currentBranch GitRef
 
-	currentBranch, err = r.currentBranch(ctx)
+	gitArgs := []string{"diff-tree", "--no-commit-id", "--name-only", "-r", string(args.CommitHash)}
+	if len(args.Paths) > 0 {
+		gitArgs = append(gitArgs, "--")
+		gitArgs = append(gitArgs, args.Paths...)
+	}
+
+	out, err = r.runGit(ctx, gitArgs...)
 	if err != nil {
+		err = NewErr(ErrFilesChanged, err)
 		goto end
 	}
 
-	{
-		args := []string{
-			"log",
-			string(currentBranch) + ".." + branch,
-			"--format=%H\t%s\t%aI\t%b" + commitRecordSep,
-		}
-
-		if len(paths) > 0 {
-			args = append(args, "--")
-			args = append(args, paths...)
-		}
-
-		out, err = r.runGit(ctx, r.Root, args...)
-		if err != nil {
-			err = NewErr(ErrCommitLog, err)
-			goto end
-		}
-	}
-
-	out = strings.TrimSpace(out)
-	if out == "" {
-		goto end
-	}
-
-	records = strings.Split(out, commitRecordSep)
-	entries = make([]CommitLogEntry, 0, len(records))
-	for _, record := range records {
-		record = strings.TrimSpace(record)
-		if record == "" {
+	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
 			continue
 		}
-		parts := strings.SplitN(record, "\t", 4)
-		if len(parts) < 3 {
-			continue
-		}
-		entry := CommitLogEntry{
-			Hash:       parts[0],
-			Subject:    parts[1],
-			AuthorDate: parts[2],
-		}
-		if len(parts) >= 4 {
-			entry.Body = strings.TrimSpace(parts[3])
-		}
-		entries = append(entries, entry)
+		files = append(files, line)
 	}
 
 end:
-	return entries, err
+	return files, err
+}
+
+// CommitDiff returns the full unified diff for a commit.
+// Runs: git show --format="" <rev>. It does not need Open.
+func (r *Repo) CommitDiff(ctx context.Context, rev dt.GitRevision) (diff string, err error) {
+	diff, err = r.runGit(ctx, "show", "--format=", string(rev))
+	if err != nil {
+		err = NewErr(ErrCommitDiff, err)
+		goto end
+	}
+	diff = strings.TrimSpace(diff)
+end:
+	return diff, err
+}
+
+// CommitFileDiff returns the diff for a single file in a commit.
+// Runs: git diff <rev>^..<rev> -- <path>. It does not need Open.
+func (r *Repo) CommitFileDiff(ctx context.Context, rev dt.GitRevision, path string) (diff string, err error) {
+	diff, err = r.runGit(ctx, "diff", string(rev)+"^.."+string(rev), "--", path)
+	if err != nil {
+		err = NewErr(ErrCommitFileDiff, err)
+		goto end
+	}
+	diff = strings.TrimSpace(diff)
+end:
+	return diff, err
+}
+
+// Branches returns all local branch names. It does not need Open.
+func (r *Repo) Branches(ctx context.Context) (branches []dt.GitBranchName, err error) {
+	var out string
+
+	out, err = r.runGit(ctx, "branch", "--list", "--format=%(refname:short)")
+	if err != nil {
+		err = NewErr(ErrBranches, err)
+		goto end
+	}
+
+	for _, line := range strings.Split(strings.TrimSpace(out), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		branches = append(branches, dt.GitBranchName(line))
+	}
+
+end:
+	return branches, err
 }

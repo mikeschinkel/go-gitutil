@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"os"
@@ -9,7 +9,7 @@ import (
 const IgnoreFilename dt.Filename = ".gitignore"
 const DotGitPath dt.PathSegment = ".git"
 const KeepFile dt.PathSegment = ".gitkeep"
-const DefaultRemote string = "origin"
+const DefaultRemote dt.GitRemoteName = "origin"
 
 var InfoPath = dt.PathSegmentsJoin(DotGitPath, "info")
 var ExcludeFilepath = dt.RelFilepathJoin(InfoPath, "exclude")

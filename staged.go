@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"context"
@@ -9,13 +9,14 @@ import (
 	"github.com/mikeschinkel/go-dt"
 )
 
-// GetStagedFiles returns the list of files currently staged in the index
+// GetStagedFiles returns the list of files currently staged in the index.
+// It does not need Open.
 func (r *Repo) GetStagedFiles(ctx context.Context) (files []dt.RelFilepath, err error) {
 	var out string
 	var lines []string
 
 	// Get list of staged files using --cached --name-only
-	out, err = r.runGit(ctx, r.Root, "diff", "--cached", "--name-only")
+	out, err = r.runGit(ctx, "diff", "--cached", "--name-only")
 	if err != nil {
 		goto end
 	}
@@ -35,9 +36,15 @@ end:
 
 // ExportStagedArgs contains arguments for ExportStagedFiles
 type ExportStagedArgs struct {
-	Repo         *Repo
+	RepoArgs
 	DestDir      dt.DirPath
 	ModuleRelDir dt.PathSegments // Optional: filter to files within this module directory
+}
+
+// ExportStagedFiles exports the staged files of the repository in dir. See
+// (*Repo).ExportStagedFiles.
+func ExportStagedFiles(ctx context.Context, dir dt.DirPath, args *ExportStagedArgs) error {
+	return NewRepo(dir, nil).ExportStagedFiles(ctx, args)
 }
 
 // ExportStagedFiles exports staged file contents to a destination directory
@@ -53,22 +60,26 @@ type ExportStagedArgs struct {
 // - Renamed files: appears as delete + add (both handled correctly)
 // - Partial staging: returns staged version only (correct)
 // - Binary files: copied as-is
-func ExportStagedFiles(ctx context.Context, args ExportStagedArgs) (err error) {
+//
+// It does not need Open.
+func (r *Repo) ExportStagedFiles(ctx context.Context, args *ExportStagedArgs) (err error) {
 	var files []dt.RelFilepath
 	var modulePrefix string
+	var repo *Repo
 
-	if args.Repo == nil {
-		err = fmt.Errorf("repo cannot be nil")
-		goto end
+	if args == nil {
+		args = &ExportStagedArgs{}
 	}
-
 	if args.DestDir == "" {
 		err = fmt.Errorf("destination directory cannot be empty")
 		goto end
 	}
 
+	// The call's RepoArgs apply to every git process this export runs.
+	repo = r.withArgs(&args.RepoArgs)
+
 	// Get list of staged files
-	files, err = args.Repo.GetStagedFiles(ctx)
+	files, err = repo.GetStagedFiles(ctx)
 	if err != nil {
 		goto end
 	}
@@ -97,7 +108,7 @@ func ExportStagedFiles(ctx context.Context, args ExportStagedArgs) (err error) {
 
 		// Use `git show :path` to get staged version
 		// The :path syntax means "the version in the index"
-		content, err = args.Repo.gitShowStaged(ctx, fileStr)
+		content, err = repo.gitShowStaged(ctx, fileStr)
 		if err != nil {
 			// File might be deleted (staged for deletion)
 			// This is expected - skip it and continue
@@ -130,7 +141,7 @@ func (r *Repo) gitShowStaged(ctx context.Context, relPath string) (content []byt
 	var cmd = fmt.Sprintf(":%s", relPath)
 	var out string
 
-	out, err = r.runGit(ctx, r.Root, "show", cmd)
+	out, err = r.runGit(ctx, "show", cmd)
 	if err != nil {
 		goto end
 	}
@@ -141,17 +152,19 @@ end:
 	return content, err
 }
 
-// GetStagedDiff returns the diff of staged changes
+// GetStagedDiff returns the diff of staged changes. It does not need Open.
 func (r *Repo) GetStagedDiff(ctx context.Context) (diff string, err error) {
-	diff, err = r.runGit(ctx, r.Root, "diff", "--cached")
+	diff, err = r.runGit(ctx, "diff", "--cached")
 	return diff, err
 }
 
 // FindBaselineTag finds the most recent reachable semver tag to use as a baseline
 // for comparison. Uses git describe for O(1) lookup instead of iterating all tags.
-func (r *Repo) FindBaselineTag(ctx context.Context, moduleRelDir dt.PathSegments) (tag string, err error) {
+// It does not need Open.
+func (r *Repo) FindBaselineTag(ctx context.Context, moduleRelDir dt.PathSegments) (tag dt.GitTagName, err error) {
 	var matchPattern string
 	var prefix string
+	var out string
 
 	if moduleRelDir.IsRoot() {
 		matchPattern = "v[0-9]*"
@@ -161,13 +174,13 @@ func (r *Repo) FindBaselineTag(ctx context.Context, moduleRelDir dt.PathSegments
 	}
 
 	// Single subprocess: git describe --tags --match <pattern> --abbrev=0 HEAD
-	tag, err = r.runGit(ctx, r.Root, "describe", "--tags", "--match", matchPattern, "--abbrev=0", "HEAD")
+	out, err = r.runGit(ctx, "describe", "--tags", "--match", matchPattern, "--abbrev=0", "HEAD")
 	if err != nil {
 		// TODO — This should ONLY return ErrNoSemverTags when the error indicates that, NOT FOR ALL ERRORS
 		err = ErrNoSemverTags
 		goto end
 	}
-	tag = strings.TrimSpace(tag)
+	tag = dt.GitTagName(strings.TrimSpace(out))
 
 end:
 	return tag, err

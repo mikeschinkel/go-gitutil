@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import "errors"
 
@@ -7,6 +7,25 @@ var (
 	ErrNoSemverTags          = errors.New("no semver tags found")
 	ErrNoReachableSemverTags = errors.New("no reachable semver tags found")
 	ErrInvalidGitStatusCode  = errors.New("invalid git status code")
+)
+
+var (
+	ErrGitCommandFailed      = errors.New("git command failed")
+	ErrStrictNeedsGitPath    = errors.New("strict mode requires GitPath")
+	ErrStrictHome            = errors.New("failed to create strict mode HOME directory")
+	ErrRepoNotOpen           = errors.New("repo is not open; call Open first")
+	ErrConfigNotSet          = errors.New("config key is not set")
+	ErrGetConfig             = errors.New("failed to get config")
+	ErrSetConfig             = errors.New("failed to set config")
+	ErrIdentityNoDisplayName = errors.New("identity has no display name")
+	ErrInit                  = errors.New("failed to init repo")
+	ErrClone                 = errors.New("failed to clone repo")
+	ErrAdd                   = errors.New("failed to add files")
+	ErrCommit                = errors.New("failed to commit")
+	ErrCommitCount           = errors.New("failed to count commits")
+	ErrTreeEntry             = errors.New("failed to read tree entry")
+	ErrTreeEntryNotFound     = errors.New("tree entry not found")
+	ErrNilCachedWorktree     = errors.New("cached_worktree is nil")
 )
 
 var (

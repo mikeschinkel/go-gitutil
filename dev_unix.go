@@ -1,6 +1,6 @@
 //go:build aix || darwin || dragonfly || freebsd || illumos || linux || netbsd || openbsd || solaris
 
-package gitutils
+package gitutil
 
 import (
 	"fmt"

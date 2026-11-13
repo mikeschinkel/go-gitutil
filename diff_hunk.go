@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 // DiffHunk represents a single @@ hunk
 type DiffHunk struct {

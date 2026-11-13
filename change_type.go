@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 // StatusChangeType represents git change types from status codes.
 // Values correspond to git status --porcelain format codes.

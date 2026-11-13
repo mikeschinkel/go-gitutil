@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"context"
@@ -9,10 +9,11 @@ import (
 	"github.com/mikeschinkel/go-dt"
 )
 
-// GetFileDiff returns unified diff for a single file vs HEAD
+// GetDiffRaw returns unified diff for a single file vs HEAD
 // Shows all uncommitted changes (staged + unstaged) for the specified file
+// It does not need Open.
 func (r *Repo) GetDiffRaw(ctx context.Context, path dt.RelFilepath) (diff string, err error) {
-	diff, err = r.runGit(ctx, r.Root, "diff", "HEAD", "--", string(path))
+	diff, err = r.runGit(ctx, "diff", "HEAD", "--", string(path))
 	if err != nil {
 		err = WithErr(err, "path", path)
 		goto end
@@ -25,6 +26,7 @@ end:
 // GetFilesDiffs returns unified diff for multiple files vs HEAD
 // Shows all uncommitted changes (staged + unstaged) for the specified files
 // This is used when the user has already selected which files to include in a commit
+// It does not need Open.
 func (r *Repo) GetFilesDiffs(ctx context.Context, paths []dt.RelFilepath) (diff string, err error) {
 	var args []string
 
@@ -37,7 +39,7 @@ func (r *Repo) GetFilesDiffs(ctx context.Context, paths []dt.RelFilepath) (diff 
 		args = append(args, string(p))
 	}
 
-	diff, err = r.runGit(ctx, r.Root, args...)
+	diff, err = r.runGit(ctx, args...)
 	if err != nil {
 		err = WithErr(err, "file_count", len(paths))
 		goto end
@@ -54,12 +56,14 @@ end:
 // TODO: This should be reanamed LoadFile() and accept args for things like
 //
 //	"HEAD" but I need to better understand the options first.
+//
+// It does not need Open.
 func (r *Repo) GetFileAtHEAD(ctx context.Context, relPath dt.RelFilepath) (content []byte, err error) {
 	var cmd string
 	var out string
 
 	cmd = "HEAD:" + string(relPath)
-	out, err = r.runGit(ctx, r.Root, "show", cmd)
+	out, err = r.runGit(ctx, "show", cmd)
 	if err != nil {
 		// File may not exist in HEAD (new file) - return empty content
 		// Check if error indicates file doesn't exist
@@ -75,6 +79,7 @@ end:
 
 // GetDiff returns the data needed to build split pane diff view
 // Returns FileDiff, committed file lines, and current file lines
+// It does not need Open.
 func (r *Repo) GetDiff(ctx context.Context, relPath dt.RelFilepath) (fileDiff *FileDiff, err error) {
 	var diffOutput string
 	var fileDiffs []*FileDiff
@@ -203,6 +208,7 @@ func (ct BlockChangeType) String() string {
 }
 
 // GetFileChanges returns file changes optimized for TUI rendering
+// It does not need Open.
 func (r *Repo) GetFileChanges(ctx context.Context, relPath dt.RelFilepath) (changes *FileChanges, err error) {
 	var fileDiff *FileDiff
 

@@ -1,9 +1,13 @@
 //go:build !aix && !darwin && !dragonfly && !freebsd && !illumos && !linux && !netbsd && !openbsd && !solaris
 
-package gitutils
+package gitutil
 
-import "fmt"
+import (
+	"fmt"
 
-func ensureSameFilesystem(_, _ string) error {
+	"github.com/mikeschinkel/go-dt"
+)
+
+func ensureSameFilesystem(_, _ dt.DirPath) error {
 	return fmt.Errorf("cache hardlink requirement is not supported on this platform")
 }

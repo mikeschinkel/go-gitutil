@@ -1,13 +1,16 @@
-package gitutils
+package gitutil
 
 import (
 	"fmt"
+
+	"github.com/mikeschinkel/go-dt"
 )
 
-type RemoteName string
+// GitRemote is a remote and a branch on it, such as the upstream a local
+// branch tracks.
 type GitRemote struct {
-	Name   RemoteName
-	Branch GitRef
+	Name   dt.GitRemoteName
+	Branch dt.GitBranchName
 }
 
 func (r GitRemote) String() string {

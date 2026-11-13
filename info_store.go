@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"context"
@@ -143,7 +143,7 @@ end:
 func (s *InfoStore) GetDirPath() (dp dt.DirPath, err error) {
 	var exists bool
 
-	dp, err = InfoDir(context.Background(), s.RepoPath)
+	dp, err = InfoDir(context.Background(), s.RepoPath, nil)
 	if err != nil {
 		goto end
 	}
@@ -208,19 +208,34 @@ func (s *InfoStore) ErrKV() ErrKV {
 	return fp.ErrKV()
 }
 
-// InfoDir returns the directory git keeps repoRoot's info/ files in, as git
-// itself resolves it. In a plain clone that is <repoRoot>/.git/info. In a
+// InfoDirArgs holds the arguments of InfoDir.
+type InfoDirArgs struct {
+	RepoArgs
+}
+
+// InfoDir returns the info/ directory of the repository dir is in. See
+// (*Repo).InfoDir.
+func InfoDir(ctx context.Context, dir dt.DirPath, args *InfoDirArgs) (dt.DirPath, error) {
+	return NewRepo(dir, nil).InfoDir(ctx, args)
+}
+
+// InfoDir returns the directory git keeps the repository's info/ files in, as
+// git itself resolves it. In a plain clone that is <root>/.git/info. In a
 // worktree or a submodule .git is a file pointing elsewhere, and info/ lives
 // in the git directory it points to, so the path cannot be built by joining
-// ".git/info" onto repoRoot.
-func InfoDir(ctx context.Context, repoRoot dt.DirPath) (dp dt.DirPath, err error) {
+// ".git/info" onto the root. It does not need Open. args may be nil.
+func (r *Repo) InfoDir(ctx context.Context, args *InfoDirArgs) (dp dt.DirPath, err error) {
 	var out string
+	var call *RepoArgs
 
-	out, err = newGitRunner(repoRoot).runGit(ctx, runGitArgs{
+	if args != nil {
+		call = &args.RepoArgs
+	}
+	out, err = r.run(ctx, call, runArgs{
 		Command: []string{"rev-parse", "--path-format=absolute", "--git-path", "info"},
 	})
 	if err != nil {
-		err = NewErr(ErrFailedInspectingGitInfoPath, "repo_root", repoRoot, err)
+		err = NewErr(ErrFailedInspectingGitInfoPath, "repo_root", r.Root, err)
 		goto end
 	}
 	dp = dt.DirPath(strings.TrimSpace(out))

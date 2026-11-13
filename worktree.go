@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"bufio"
@@ -13,11 +13,11 @@ import (
 type Worktree struct {
 	// Path is the worktree's working-tree root.
 	Path dt.DirPath
-	// Branch is the branch checked out in the worktree (e.g. "refs/heads/main").
+	// Branch is the branch checked out in the worktree (e.g. "main").
 	// Empty if the worktree is detached.
-	Branch GitRef
-	// HEAD is the commit SHA the worktree is currently at.
-	HEAD string
+	Branch dt.GitBranchName
+	// HEAD is the commit the worktree is currently at.
+	HEAD dt.GitObjectID
 	// Bare is true for bare repos.
 	Bare bool
 	// Detached is true for detached-HEAD worktrees.
@@ -37,50 +37,81 @@ type Worktree struct {
 type AddWorktreeArgs struct {
 	// Path is where the new worktree's working tree will live.
 	Path dt.DirPath
-	// Branch is the new branch name to create (e.g. "task/969-stable-paths").
+	// Branch is the branch the worktree checks out (e.g. "task/969-stable-paths").
 	// If empty, AddWorktree returns an error (use AddDetachedWorktree for detached HEAD).
-	Branch string
-	// Base is the ref to branch from (e.g. "main", "HEAD", or a commit SHA).
-	Base string
+	Branch dt.GitBranchName
+	// Base is the revision to create Branch from (e.g. "main", "HEAD", or a
+	// commit ID). Empty means HEAD. Unused when an existing branch is reused.
+	Base dt.GitRevision
 	// Force, when true, allows creating the worktree even if the path already
 	// exists or the branch is already checked out elsewhere. Use sparingly.
 	Force bool
+	// ReuseBranch, when true and Branch already exists, checks the existing
+	// branch out instead of failing. Without it, or when Branch does not
+	// exist, AddWorktree creates Branch with -b.
+	ReuseBranch bool
 }
 
 var ErrAddWorktreeBranchRequired = errors.New("AddWorktree: Branch is required (use AddDetachedWorktree for detached HEAD)")
 
-// AddWorktree runs `git worktree add -b <branch> <path> <base>` from the
-// repository root. The new worktree is created at args.Path with a fresh
-// branch named args.Branch starting from args.Base.
+// AddWorktree adds a linked worktree at args.Path on args.Branch. It runs
+// `git worktree add -b <branch> <path> <base>`, creating the branch from
+// args.Base, or, with args.ReuseBranch set and the branch existing,
+// `git worktree add <path> <branch>`. It does not need Open.
 func (r *Repo) AddWorktree(ctx context.Context, args AddWorktreeArgs) (err error) {
+	var cmd []string
+	var reuse bool
+
 	if args.Branch == "" {
 		err = ErrAddWorktreeBranchRequired
 		goto end
 	}
 
-	{
-		cmd := []string{"worktree", "add"}
-		if args.Force {
-			cmd = append(cmd, "--force")
+	if args.ReuseBranch {
+		reuse, err = r.branchExists(ctx, args.Branch)
+		if err != nil {
+			goto end
 		}
-		cmd = append(cmd, "-b", args.Branch, string(args.Path))
-		if args.Base != "" {
-			cmd = append(cmd, args.Base)
-		}
-		_, err = r.runGit(ctx, r.Root, cmd...)
 	}
+
+	cmd = []string{"worktree", "add"}
+	if args.Force {
+		cmd = append(cmd, "--force")
+	}
+	switch reuse {
+	case true:
+		cmd = append(cmd, "--", string(args.Path), string(args.Branch))
+	default:
+		cmd = append(cmd, "-b", string(args.Branch), "--", string(args.Path))
+		if args.Base != "" {
+			cmd = append(cmd, string(args.Base))
+		}
+	}
+	_, err = r.streamGit(ctx, cmd...)
 end:
 	return err
 }
 
-// AddDetachedWorktree runs `git worktree add --detach <path> <ref>` from
-// the repository root.
-func (r *Repo) AddDetachedWorktree(ctx context.Context, path dt.DirPath, ref string) (err error) {
-	cmd := []string{"worktree", "add", "--detach", string(path)}
-	if ref != "" {
-		cmd = append(cmd, ref)
+// branchExists reports whether the local branch exists.
+func (r *Repo) branchExists(ctx context.Context, branch dt.GitBranchName) (exists bool, err error) {
+	_, err = r.runGit(ctx, "show-ref", "--verify", "--quiet", "refs/heads/"+string(branch))
+	switch {
+	case err == nil:
+		exists = true
+	case exitCode(err) == 1:
+		err = nil
 	}
-	_, err = r.runGit(ctx, r.Root, cmd...)
+	return exists, err
+}
+
+// AddDetachedWorktree runs `git worktree add --detach <path> <rev>` from
+// the repository root. It does not need Open.
+func (r *Repo) AddDetachedWorktree(ctx context.Context, path dt.DirPath, rev dt.GitRevision) (err error) {
+	cmd := []string{"worktree", "add", "--detach", "--", string(path)}
+	if rev != "" {
+		cmd = append(cmd, string(rev))
+	}
+	_, err = r.runGit(ctx, cmd...)
 	return err
 }
 
@@ -94,22 +125,24 @@ type RemoveWorktreeArgs struct {
 }
 
 // RemoveWorktree runs `git worktree remove <path>` from the repository root.
+// It does not need Open.
 func (r *Repo) RemoveWorktree(ctx context.Context, args RemoveWorktreeArgs) (err error) {
 	cmd := []string{"worktree", "remove"}
 	if args.Force {
 		cmd = append(cmd, "--force")
 	}
 	cmd = append(cmd, string(args.Path))
-	_, err = r.runGit(ctx, r.Root, cmd...)
+	_, err = r.runGit(ctx, cmd...)
 	return err
 }
 
 // ListWorktrees returns all worktrees of this repository, parsed from
-// `git worktree list --porcelain`. Includes the main checkout itself.
+// `git worktree list --porcelain`. Includes the main checkout itself. It does
+// not need Open.
 func (r *Repo) ListWorktrees(ctx context.Context) (worktrees []Worktree, err error) {
 	var out string
 
-	out, err = r.runGit(ctx, r.Root, "worktree", "list", "--porcelain")
+	out, err = r.runGit(ctx, "worktree", "list", "--porcelain")
 	if err != nil {
 		goto end
 	}
@@ -150,9 +183,9 @@ func parseWorktreePorcelain(s string) (worktrees []Worktree) {
 		case strings.HasPrefix(line, "worktree "):
 			current.Path = dt.DirPath(strings.TrimPrefix(line, "worktree "))
 		case strings.HasPrefix(line, "HEAD "):
-			current.HEAD = strings.TrimPrefix(line, "HEAD ")
+			current.HEAD = dt.GitObjectID(strings.TrimPrefix(line, "HEAD "))
 		case strings.HasPrefix(line, "branch "):
-			current.Branch = GitRef(strings.TrimPrefix(line, "branch "))
+			current.Branch, _ = dt.GitRef(strings.TrimPrefix(line, "branch ")).ToBranchName()
 		case line == "detached":
 			current.Detached = true
 		case line == "bare":

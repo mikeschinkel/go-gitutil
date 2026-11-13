@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/mikeschinkel/go-dt"
-	gitutils "github.com/mikeschinkel/go-gitutil"
+	"github.com/mikeschinkel/go-gitutil"
 )
 
 // gitIn runs git in dir with a fixed identity, failing the test on error.
@@ -51,16 +51,16 @@ func TestInfoDir_ResolvesInWorktree(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, dir := range []string{clone, worktree} {
-		got, err := gitutils.InfoDir(ctx, dt.DirPath(dir))
+		got, err := gitutil.InfoDir(ctx, dt.DirPath(dir), nil)
 		if err != nil {
-			t.Fatalf("gitutils.InfoDir(%s): %v", dir, err)
+			t.Fatalf("gitutil.InfoDir(%s): %v", dir, err)
 		}
 		resolved, err := filepath.EvalSymlinks(string(got))
 		if err != nil {
-			t.Fatalf("gitutils.InfoDir(%s) = %s, which does not exist: %v", dir, got, err)
+			t.Fatalf("gitutil.InfoDir(%s) = %s, which does not exist: %v", dir, got, err)
 		}
 		if resolved != want {
-			t.Errorf("gitutils.InfoDir(%s) = %s, want %s", dir, resolved, want)
+			t.Errorf("gitutil.InfoDir(%s) = %s, want %s", dir, resolved, want)
 		}
 	}
 }
@@ -68,7 +68,7 @@ func TestInfoDir_ResolvesInWorktree(t *testing.T) {
 func TestInfoStore_SaveLoadInWorktree(t *testing.T) {
 	_, worktree := newRepoWithWorktree(t)
 
-	store := gitutils.NewInfoStore(dt.DirPath(worktree), "gomion-test.json")
+	store := gitutil.NewInfoStore(dt.DirPath(worktree), "gomion-test.json")
 	err := store.Save([]byte("hello"))
 	if err != nil {
 		t.Fatalf("Save: %v", err)
@@ -82,23 +82,23 @@ func TestInfoStore_SaveLoadInWorktree(t *testing.T) {
 	}
 }
 
-func TestOpenRepo_Remote(t *testing.T) {
+func TestOpen_Remote(t *testing.T) {
 	clone, worktree := newRepoWithWorktree(t)
 	ctx := context.Background()
 
 	tests := []struct {
 		name       string
 		dir        string
-		wantRemote gitutils.GitRemote
+		wantRemote gitutil.GitRemote
 	}{
-		{name: "tracks origin/main", dir: clone, wantRemote: gitutils.GitRemote{Name: "origin", Branch: "main"}},
-		{name: "no upstream", dir: worktree, wantRemote: gitutils.GitRemote{}},
+		{name: "tracks origin/main", dir: clone, wantRemote: gitutil.GitRemote{Name: "origin", Branch: "main"}},
+		{name: "no upstream", dir: worktree, wantRemote: gitutil.GitRemote{}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			repo, err := gitutils.OpenRepo(ctx, dt.DirPath(tt.dir))
+			repo, err := gitutil.Open(ctx, dt.DirPath(tt.dir), nil)
 			if err != nil {
-				t.Fatalf("OpenRepo: %v", err)
+				t.Fatalf("Open: %v", err)
 			}
 			if repo.Remote != tt.wantRemote {
 				t.Errorf("Remote = %+v, want %+v", repo.Remote, tt.wantRemote)

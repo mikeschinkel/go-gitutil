@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 // Staging indicates where a change exists (index vs worktree).
 // IndexStaging and WorktreeStaging values match git status --porcelain positions: 0=index, 1=worktree.

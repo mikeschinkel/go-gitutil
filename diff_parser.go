@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"crypto/sha256"

@@ -1,10 +1,9 @@
-package gitutils
+package gitutil
 
 import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -17,6 +16,7 @@ type releaseFunc func() error
 type CachedWorktree struct {
 	Dir     dt.DirPath
 	repoDir dt.DirPath
+	repo    *Repo
 	release func() error
 }
 
@@ -33,12 +33,9 @@ end:
 	return err
 }
 
-var ErrNilCachedWorktree = errors.New("cached_worktree is nil")
-
-func (cw *CachedWorktree) Checkout(ctx context.Context, ref string) (err error) {
-	var runner GitRunner
-	var args runGitArgs
-
+// Checkout force-checks-out rev in the cache repo, resets to it and removes
+// untracked and ignored files.
+func (cw *CachedWorktree) Checkout(ctx context.Context, rev dt.GitRevision) (err error) {
 	if cw == nil {
 		err = NewErr(ErrNilCachedWorktree)
 		goto end
@@ -48,21 +45,15 @@ func (cw *CachedWorktree) Checkout(ctx context.Context, ref string) (err error) 
 		goto end
 	}
 
-	runner = newGitRunner(cw.repoDir)
-	args = runGitArgs{}
-
-	args.Command = []string{"checkout", "--force", ref}
-	_, err = runner.runGit(ctx, args)
+	_, err = cw.repo.runGit(ctx, "checkout", "--force", string(rev))
 	if err != nil {
 		goto end
 	}
-	args.Command = []string{"reset", "--hard", ref}
-	_, err = runner.runGit(ctx, args)
+	_, err = cw.repo.runGit(ctx, "reset", "--hard", string(rev))
 	if err != nil {
 		goto end
 	}
-	args.Command = []string{"clean", "-fdx"}
-	_, err = runner.runGit(ctx, args)
+	_, err = cw.repo.runGit(ctx, "clean", "-fdx")
 	if err != nil {
 		goto end
 	}
@@ -94,13 +85,13 @@ func ensureSafeCacheRepoDir(repoDir dt.DirPath) (err error) {
 		err = fmt.Errorf("refusing to run in non-cache directory: %s", repoDir)
 		goto end
 	}
-	exists, err = dt.FilepathJoin(repoDir, ".git").Exists()
-	if exists {
-		err = fmt.Errorf("cache repo missing .git directory: %s", repoDir)
+	exists, err = dt.DirPathJoin(repoDir, DotGitPath).Exists()
+	if err != nil {
+		err = fmt.Errorf("filesystem error accessing %s: %w", repoDir, err)
 		goto end
 	}
-	if err != nil {
-		err = fmt.Errorf("filesystem error accessing %s", repoDir)
+	if !exists {
+		err = fmt.Errorf("cache repo missing .git directory: %s", repoDir)
 		goto end
 	}
 end:
@@ -133,6 +124,7 @@ func openCachedWorktree(ctx context.Context, r *Repo) (wt *CachedWorktree, err e
 	wt = &CachedWorktree{
 		Dir:     repoDir,
 		repoDir: repoDir,
+		repo:    NewRepo(repoDir, &r.args),
 		release: release,
 	}
 	err = reposDir.MkdirAll(0o755)
@@ -145,7 +137,7 @@ func openCachedWorktree(ctx context.Context, r *Repo) (wt *CachedWorktree, err e
 		if !os.IsNotExist(err) {
 			goto end
 		}
-		err = cloneLocalRepo(ctx, r.Root, repoDir)
+		err = cloneLocalRepo(ctx, wt.repo, r.Root)
 		if err != nil {
 			goto end
 		}
@@ -156,14 +148,12 @@ func openCachedWorktree(ctx context.Context, r *Repo) (wt *CachedWorktree, err e
 		goto end
 	}
 
-	err = refreshFromSource(ctx, repoDir, r.Root)
+	err = refreshFromSource(ctx, wt.repo, r.Root)
 	if err != nil {
 		goto end
 	}
 
-	_, err = newGitRunner(repoDir).runGit(ctx, runGitArgs{
-		Command: []string{"clean", "-fdx"},
-	})
+	_, err = wt.repo.runGit(ctx, "clean", "-fdx")
 	if err != nil {
 		goto end
 	}
@@ -175,15 +165,13 @@ end:
 	return wt, err
 }
 
-func refreshFromSource(ctx context.Context, cache, source dt.DirPath) (err error) {
+func refreshFromSource(ctx context.Context, cache *Repo, source dt.DirPath) (err error) {
 	// Always refresh from the source repo, ensuring we have up-to-date commits and tags.
 	// This fetches branches into Remote-tracking refs to avoid updating any checked-out local branch.
-	_, err = newGitRunner(cache).runGit(ctx, runGitArgs{
-		Command: []string{"fetch", "--prune", "--tags", string(source),
-			"+refs/heads/*:refs/remotes/source/*",
-			"+HEAD:refs/remotes/source/HEAD",
-		},
-	})
+	_, err = cache.runGit(ctx, "fetch", "--prune", "--tags", string(source),
+		"+refs/heads/*:refs/remotes/source/*",
+		"+HEAD:refs/remotes/source/HEAD",
+	)
 	return err
 }
 
@@ -248,13 +236,16 @@ func sanitize(ps dt.PathSegment) string {
 	return b.String()
 }
 
-func cloneLocalRepo(ctx context.Context, src, dst dt.DirPath) (err error) {
-	err = dst.Dir().MkdirAll(0o755)
+// cloneLocalRepo clones src into cache's directory without a checkout,
+// hardlinking objects.
+func cloneLocalRepo(ctx context.Context, cache *Repo, src dt.DirPath) (err error) {
+	err = cache.Root.Dir().MkdirAll(0o755)
 	if err != nil {
 		goto end
 	}
-	_, err = newGitRunner("").runGit(ctx, runGitArgs{
-		Command: []string{"clone", "--local", "--no-checkout", string(src), string(dst)},
+	err = cache.Clone(ctx, string(src), &CloneArgs{
+		Local:      true,
+		NoCheckout: true,
 	})
 end:
 	return err

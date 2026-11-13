@@ -1,0 +1,45 @@
+# ── DO NOT EDIT ─────────────────────────────────────────────────────
+# This suite belongs to E-2600 and records what was true when E-2600
+# landed. Edit it only if you ARE E-2600. If your change breaks a check
+# here, leave it alone — see .endless/tasks/CLAUDE.md.
+schema = 1
+task   = "E-2600"
+
+[[check]]
+name   = "test/ module: Init, Clone, Add, Commit, Open, strict mode, RepoArgs rules, wrappers, worktrees, read side"
+runner = "gotest"
+dir    = "test"
+paths  = ["./..."]
+
+[[check]]
+name   = "root module tests (diff parser)"
+runner = "gotest"
+paths  = ["./..."]
+
+[[check]]
+name = "both modules build and vet without go.work, and the root builds for windows"
+sh   = "GOWORK=off go build ./... && GOWORK=off go vet ./... && GOOS=windows GOWORK=off go build ./... && cd test && GOWORK=off go vet ./..."
+
+[[check]]
+name         = "both modules lint clean with golangci-lint v2.15+"
+sh           = "golangci-lint version 2>&1 && GOWORK=off golangci-lint run ./... 2>&1 && cd test && GOWORK=off golangci-lint run ./... 2>&1"
+not_contains = "issues:"
+
+[[check]]
+name     = "the package is named gitutil"
+sh       = "GOWORK=off go doc . | head -1"
+contains = "package gitutil "
+
+[[check]]
+name = "go.mod files: Go 1.27, go-dt v0.7.2, no replace in the root"
+sh   = "grep -qx 'go 1.27.0' go.mod && grep -qx 'go 1.27.0' test/go.mod && grep -q 'mikeschinkel/go-dt v0.7.2' go.mod && ! grep -q '^replace' go.mod"
+
+[[check]]
+name   = "removed API is gone: Streamer, StageModuleFiles, package-level Commit/UnstageAll, OpenRepo, GitRunner, GitRef, RemoteName"
+sh     = "grep -nE 'type Streamer|func StageModuleFiles|^func Commit\\(|^func UnstageAll\\(|func OpenRepo|type GitRunner|^type GitRef |^type RemoteName ' *.go || true"
+equals = ""
+
+[[check]]
+name   = "only run.go starts processes"
+sh     = "grep -ln 'exec\\.Command' *.go"
+equals = "run.go"

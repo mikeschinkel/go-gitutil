@@ -1,4 +1,4 @@
-package gitutils
+package gitutil
 
 import (
 	"context"
@@ -8,8 +8,18 @@ import (
 	"github.com/mikeschinkel/go-dt"
 )
 
+// IgnoredFilesArgs holds the arguments of IgnoredFiles.
+type IgnoredFilesArgs struct {
+	RepoArgs
+}
+
+// IgnoredFiles returns the ignored files in dir. See (*Repo).IgnoredFiles.
+func IgnoredFiles(ctx context.Context, dir dt.DirPath, args *IgnoredFilesArgs) ([]dt.RelFilepath, error) {
+	return NewRepo(dir, nil).IgnoredFiles(ctx, args)
+}
+
 // IgnoredFiles returns repo-root-relative file paths that should be treated as
-// ignored regardless of regardless of staging/tracking state.
+// ignored regardless of staging/tracking state.
 //
 // It unions:
 //  1. ignored + untracked: git ls-files -o -i --exclude-standard
@@ -18,40 +28,61 @@ import (
 // Notes:
 // - This includes ignore rules from .gitignore, .git/info/exclude, and the user's global excludes file.
 // - Git ignore rules do not apply to tracked files, but (2) finds tracked files that *match* ignore rules.
-func IgnoredFiles(ctx context.Context, repoDir dt.DirPath) (files []dt.RelFilepath, err error) {
+//
+// It does not need Open. args may be nil.
+func (r *Repo) IgnoredFiles(ctx context.Context, args *IgnoredFilesArgs) (files []dt.RelFilepath, err error) {
 	var oFiles, cFiles []string
+	var ls LsFilesRawArgs
 
-	oFiles, err = LsFilesRaw(ctx, repoDir, []string{"-o", "-i", "--exclude-standard"})
+	if args != nil {
+		ls.RepoArgs = args.RepoArgs
+	}
+
+	ls.Args = []string{"-o", "-i", "--exclude-standard"}
+	oFiles, err = r.LsFilesRaw(ctx, &ls)
 	if err != nil {
 		goto end
 	}
 
-	cFiles, err = LsFilesRaw(ctx, repoDir, []string{"-c", "-i", "--exclude-standard"})
+	ls.Args = []string{"-c", "-i", "--exclude-standard"}
+	cFiles, err = r.LsFilesRaw(ctx, &ls)
 	if err != nil {
 		goto end
 	}
-	files = make([]dt.RelFilepath, len(oFiles)+len(cFiles))
-	{
-		n := 0
-		for _, xFiles := range [][]string{oFiles, cFiles} {
-			for _, file := range xFiles {
-				files[n] = dt.RelFilepath(file)
-				n++
-			}
+	files = make([]dt.RelFilepath, 0, len(oFiles)+len(cFiles))
+	for _, xFiles := range [][]string{oFiles, cFiles} {
+		for _, file := range xFiles {
+			files = append(files, dt.RelFilepath(file))
 		}
 	}
 end:
 	return files, err
 }
 
-func LsFilesRaw(ctx context.Context, repoDir dt.DirPath, args []string) (paths []string, err error) {
+// LsFilesRawArgs holds the arguments of LsFilesRaw.
+type LsFilesRawArgs struct {
+	RepoArgs
+	// Args are passed to git ls-files -z after -z.
+	Args []string
+}
+
+// LsFilesRaw runs git ls-files in dir. See (*Repo).LsFilesRaw.
+func LsFilesRaw(ctx context.Context, dir dt.DirPath, args *LsFilesRawArgs) ([]string, error) {
+	return NewRepo(dir, nil).LsFilesRaw(ctx, args)
+}
+
+// LsFilesRaw runs git ls-files -z with args.Args and returns the paths it
+// lists. It does not need Open. args may be nil.
+func (r *Repo) LsFilesRaw(ctx context.Context, args *LsFilesRawArgs) (paths []string, err error) {
 	var out string
 
-	out, err = newGitRunner(repoDir).runGit(ctx, runGitArgs{
+	if args == nil {
+		args = &LsFilesRawArgs{}
+	}
+	out, err = r.run(ctx, &args.RepoArgs, runArgs{
 		NULSeparated: true,
-		Command:      append([]string{"ls-files", "-z"}, args...),
+		Command:      append([]string{"ls-files", "-z"}, args.Args...),
 	})
-
 	if err != nil {
 		goto end
 	}
@@ -92,7 +123,7 @@ func AppendToGitExclude(repoRoot dt.DirPath, patterns []string) (err error) {
 	var excludePath dt.Filepath
 	var infoDir dt.DirPath
 
-	infoDir, err = InfoDir(context.Background(), repoRoot)
+	infoDir, err = InfoDir(context.Background(), repoRoot, nil)
 	if err != nil {
 		err = NewErr(ErrAppendToGitExclude, err)
 		goto end
@@ -105,31 +136,6 @@ func AppendToGitExclude(repoRoot dt.DirPath, patterns []string) (err error) {
 			"pattern_count", len(patterns),
 		)
 		goto end
-	}
-
-end:
-	return err
-}
-
-// UnstageFiles removes files from the git index (unstages them) without deleting from working tree.
-// Uses `git reset HEAD <file>` for each file.
-// This is necessary when adding staged files to .gitignore - they won't be ignored until unstaged.
-func UnstageFiles(ctx context.Context, repoRoot dt.DirPath, files []dt.RelFilepath) (err error) {
-	if len(files) == 0 {
-		goto end
-	}
-
-	for _, file := range files {
-		_, err = newGitRunner(repoRoot).runGit(ctx, runGitArgs{
-			Command: []string{"reset", "HEAD", string(file)},
-		})
-		if err != nil {
-			err = NewErr(ErrUnstageFile, err,
-				"file", file,
-				"repo_root", repoRoot,
-			)
-			goto end
-		}
 	}
 
 end:
