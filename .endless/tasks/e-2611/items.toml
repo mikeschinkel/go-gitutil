@@ -37,3 +37,8 @@ statement = "go.mod says go 1.27.0, requires published go-diffutils v0.1.0, go-d
 id = "P7"
 kind = "deliverable"
 statement = "A test/ module holds gomion's worktree tests (InfoDir, InfoStore in a worktree, OpenRepo remote), written against the exported API"
+
+[[item]]
+id = "P8"
+kind = "deliverable"
+statement = ".gitignore covers /bin/, go.work and go.work.sum"
