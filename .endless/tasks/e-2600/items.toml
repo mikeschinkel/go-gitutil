@@ -191,3 +191,8 @@ statement = "GitRunner, an exported type with no exported methods, is deleted al
 id = "P69"
 kind = "deliverable"
 statement = "CommitsSinceTag, CommitsBetweenTags and CommitsOnBranch share one commitLog parser and all wrap ErrCommitLog"
+
+[[item]]
+id = "P70"
+kind = "deliverable"
+statement = "New error paths record directories as plain values, not dt.DirPath.ErrKV, which panics unless the program called dt.EnsureUserHomeDir"
