@@ -65,7 +65,9 @@ method.
 With `Strict`, every git process gets an environment built from nothing,
 with none of the parent process's variables:
 
-- `HOME` set to an empty directory that go-gitutil creates and removes;
+- `HOME` set to the path of an empty directory that go-gitutil creates and
+  removes. Never an empty or unset `HOME`: tools such as ssh then fall back
+  to the home directory in the user database;
 - `GIT_CONFIG_GLOBAL=/dev/null` and `GIT_CONFIG_NOSYSTEM=1`;
 - `GIT_ALLOW_PROTOCOL=file`, so only local remotes work;
 - `GIT_TERMINAL_PROMPT=0`;
