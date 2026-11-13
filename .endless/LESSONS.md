@@ -52,3 +52,7 @@ While planning E-2600 (go-gitutil CommitArgs), I proposed that a zero Committer/
 ### [2026-11-13] Follow-up tasks pose the question, not my chat conclusion
 Filing a go-dt follow-up after concluding in chat that no remote-tracking branch type was needed, I titled it 'Document why no remote-tracking branch type exists'. Mike reframed it as 'Consider adding a remote-tracking branch type'. A conclusion reached in a chat is reasoning for the task's analysis, not a decision the task exists to record; the task should pose the open question so whoever plans it weighs both sides, with the chat reasoning as a starting point.
 - **Project**: go-gitutil
+
+### [2026-11-13] For go-gitutil, isolated means no machine state at all, not just no git config files
+While planning E-2600's strict mode, I offered isolating only git's global and system config files (GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_NOSYSTEM=1), then listed SSH keys, askpass env vars and the user's .netrc file as auth methods that would 'still work'. Mike pointed out that each of those is the machine leaking into a test that is meant to be isolated. Isolation is the goal; network auth is not. So build the process environment from scratch (env -i style): HOME set to an empty dir, GIT_ALLOW_PROTOCOL=file, no inherited GIT_* or SSH_* vars. Don't propose adding a secrets store to make isolated mode reach network remotes; that defeats the goal.
+- **Project**: go-gitutil
