@@ -48,3 +48,7 @@ Planning go-gitutil E-2600 Q1, I listed 'a caller wanting one identity sets it t
 ### [2026-11-13] Use nil pointers, not zero-value rules, to mark an optional Args field as unset
 While planning E-2600 (go-gitutil CommitArgs), I proposed that a zero Committer/CommitterDate means 'copy Author/AuthorDate', relying on an empty dt.Mailbox.Email and time.Time.IsZero(). Mike rejected that: zero-value rules are fragile, the meaning of 'unset' differs per type and has to be learned field by field, so developers and AI agents misread it. A nil pointer means 'not given' to everyone. So, when an Args field's absence triggers a default, make it a pointer and default on nil.
 - **Project**: go-gitutil
+
+### [2026-11-13] Follow-up tasks pose the question, not my chat conclusion
+Filing a go-dt follow-up after concluding in chat that no remote-tracking branch type was needed, I titled it 'Document why no remote-tracking branch type exists'. Mike reframed it as 'Consider adding a remote-tracking branch type'. A conclusion reached in a chat is reasoning for the task's analysis, not a decision the task exists to record; the task should pose the open question so whoever plans it weighs both sides, with the chat reasoning as a starting point.
+- **Project**: go-gitutil
