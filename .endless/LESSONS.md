@@ -92,3 +92,7 @@ Context: planning go-dt E-2623, which needs a matching change in go-cliutil's er
 ### [2026-11-14] Several needs from one cause are one task
 While planning E-2608 (go-goutil extraction) I filed two go-gitutil tasks, E-2624 (commit signal classification) and E-2625 (Repo.Ignored check-ignore batch). Mike pointed me at ED-1550: several symptoms of one cause are one task; file the cause. Both existed for one reason, the extraction leaving gomion two git-shaped needs, so they belonged in one task. Before filing a second task in the same repo for the same originating decision, ask whether it shares the cause, and if so put both in one task.
 - **Project**: go-gitutil
+
+### [2026-11-15] go-stash and gru are irrelevant; leave them out of research and analysis
+Context: planning go-cliutil E-2626 (shorten home-directory paths in printed errors). While surveying apps that use go-cliutil, I cited go-stash and gru as evidence of how apps call writer.Errorf before cliutil.Initialize(). Mike said both are irrelevant projects and should be hidden, as he said earlier of go-nextver. Lesson: when surveying consumers of Mike's packages, leave go-stash and gru out of findings and analysis.
+- **Project**: go-gitutil
