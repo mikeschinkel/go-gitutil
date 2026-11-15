@@ -84,3 +84,7 @@ Context: E-2600 in go-gitutil. go-dt's DirPath.ErrKV() calls ToTilde(), which ca
 ### [2026-11-14] go-nextver is irrelevant; leave it out of research and analysis
 Context: planning go-dt E-2623 (ErrKV() returns full paths without ToTilde()). While surveying consumers across Mike's projects, I cited go-nextver's ux() as evidence of an existing pattern and of a broken ErrValue lookup. Mike said go-nextver is an irrelevant project and should be hidden. Lesson: when surveying consumers of Mike's packages, leave go-nextver out of findings and analysis.
 - **Project**: go-gitutil
+
+### [2026-11-14] Work in a project always goes in a task in that project; never ask
+Context: planning go-dt E-2623, which needs a matching change in go-cliutil's error printing. I asked whether to file a separate go-cliutil task or widen E-2623 to cover both repos. Mike said this is a question I should never ask: work in a project always belongs in a task in that project. Lesson: when a plan needs a change in another project, file (or plan for) a task in that project and link it; do not offer to widen the current task across projects.
+- **Project**: go-gitutil
