@@ -72,3 +72,7 @@ Investigating E-2551 (2026-11-13), Mike found that a planning session had run 'e
 ### [2026-11-13] Adopting edits made outside a task: branch, reset main, delegate to tasks
 Discussing E-2545 on 2026-11-13, Mike set the route for edits he makes in a main checkout outside any task: commit them to a holding branch (wip/E-NNNN, never the task branch, which worktree creation would refuse as an orphan carrying real work), reset main, and delegate the rest to project-specific tasks whose spawned sessions bring the edits into their own worktrees. He corrected my 'no worktree' wording: a spawned session always has a worktree; what is never created is a worktree without a session. Apply: never create a worktree up front for such edits; describe the route in those terms.
 - **Project**: go-gitutil
+
+### [2026-11-14] Show code when presenting API-shape options
+While planning E-2608 (go-goutil extraction) I presented API options for AnalyzeCommitMessages' input type as prose with symbol names. Mike: the options were not clear, he needs more detail and wants to see code, not just symbol names, and he suspected an interface option was missing. When an open question is about the shape of an API, show each option as a short code snippet (signature plus the call site it implies) and include an interface-based option when one is plausible.
+- **Project**: go-gitutil
