@@ -88,3 +88,7 @@ Context: planning go-dt E-2623 (ErrKV() returns full paths without ToTilde()). W
 ### [2026-11-14] Work in a project always goes in a task in that project; never ask
 Context: planning go-dt E-2623, which needs a matching change in go-cliutil's error printing. I asked whether to file a separate go-cliutil task or widen E-2623 to cover both repos. Mike said this is a question I should never ask: work in a project always belongs in a task in that project. Lesson: when a plan needs a change in another project, file (or plan for) a task in that project and link it; do not offer to widen the current task across projects.
 - **Project**: go-gitutil
+
+### [2026-11-14] Several needs from one cause are one task
+While planning E-2608 (go-goutil extraction) I filed two go-gitutil tasks, E-2624 (commit signal classification) and E-2625 (Repo.Ignored check-ignore batch). Mike pointed me at ED-1550: several symptoms of one cause are one task; file the cause. Both existed for one reason, the extraction leaving gomion two git-shaped needs, so they belonged in one task. Before filing a second task in the same repo for the same originating decision, ask whether it shares the cause, and if so put both in one task.
+- **Project**: go-gitutil
