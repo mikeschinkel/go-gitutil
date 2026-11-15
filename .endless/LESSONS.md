@@ -80,3 +80,7 @@ While planning E-2608 (go-goutil extraction) I presented API options for Analyze
 ### [2026-11-14] Error-path code must not raise errors; don't silence a deliberate panic to get past it
 Context: E-2600 in go-gitutil. go-dt's DirPath.ErrKV() calls ToTilde(), which calls GetUserHomeDir(), which panics unless the program called dt.EnsureUserHomeDir(). I proposed changing GetUserHomeDir() to look up the home directory silently on first use. Mike rejected that: the panic exists on purpose so the user sees that EnsureUserHomeDir() was never called, and quietly making it go away defeats that intent. The root cause is elsewhere: error-handling code should take special effort not to generate errors itself, so ErrKV() should not depend on ToTilde(). It should output the full path, and downstream code (whatever displays the error) should turn $HOME into '~'. Lesson: when a deliberate error or panic stands in the way, don't remove or bypass it. Ask whether the code that triggers it belongs on that path at all, especially on an error path.
 - **Project**: go-gitutil
+
+### [2026-11-14] go-nextver is irrelevant; leave it out of research and analysis
+Context: planning go-dt E-2623 (ErrKV() returns full paths without ToTilde()). While surveying consumers across Mike's projects, I cited go-nextver's ux() as evidence of an existing pattern and of a broken ErrValue lookup. Mike said go-nextver is an irrelevant project and should be hidden. Lesson: when surveying consumers of Mike's packages, leave go-nextver out of findings and analysis.
+- **Project**: go-gitutil
