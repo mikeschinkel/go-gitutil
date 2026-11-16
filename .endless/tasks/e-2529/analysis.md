@@ -8,4 +8,4 @@
 - PLAN-CONDENSED-DIFF-TYPES.md is removed. It proposes moving the condensed-diff types into gitutil. Those types and BuildCondensedDiff read only old/new lines and change ranges, which diffutils.DiffContent already carries, so gitutil is not their home. Where they belong is a separate question put to Mike.
 - E-2602 is not needed before the release: the root diff_parser_test.go imports only testing.
 - The analysis's earlier steps (commit the go.mod change, require published versions, drop replace, Go 1.27, .gitignore) were done by E-2600 and E-2624, so the plan checks them instead of redoing them.
-- gomion is built from a scratch go.work because no installed or checked-out gomion builds with `repo setup` today. E-2627 tracks the bug that makes `repo setup --check` exit non-zero.
+- gomion is built from a scratch go.work because no installed or checked-out gomion builds with `repo setup` today. E-2540 tracks the bug that makes `repo setup --check` exit non-zero.
