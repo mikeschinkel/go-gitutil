@@ -42,3 +42,19 @@ nested = slices.DeleteFunc(nested, func(d dt.RelDirPath) bool { return slices.Co
 ```
 
 Use `check-ignore --stdin -z` with paths NUL-separated on stdin through the one run function (E-2600 gives it stdin), and read the NUL-separated answer. check-ignore exits 1 when no path is ignored, which is not an error here. Whether the parameter is []dt.RelDirPath or a path union covering files too is for the implementer to settle with Mike; the known caller passes directories. Tests in test/ (E-2602).
+
+# Decided while planning (2026-11-15, with Mike, from go-goutil E-2608's session)
+
+## One conventional-commit grammar, existing functions rebuilt on it (Mike: B)
+- conventional_commit.go matched exact prefixes ("feat: "), so `feat(api): x` and `feat!: x` parsed as having no type, while gomion's commit-signal helpers understood scope and `!`. Options: (A) add a spec parser and leave the three existing functions, leaving two exported readings that disagree on scoped subjects; (B) add it and rebuild the existing functions on it, so scope and `!` survive parse and compose; (C) port gomion's private helpers, a second private reading. Mike chose B: one grammar, broken before the first release rather than after. Cost accepted: gomion's commit-message editor must carry the scope through an edit, handed to E-2601.
+
+## Decided without asking (Mike could object)
+- Breaking-change footer per the spec: a line starting with `BREAKING CHANGE: ` or `BREAKING-CHANGE: `, uppercase only. gomion's `strings.Contains` also fired on prose mentioning the phrase.
+- Types match case-insensitively, per the spec.
+- The parser accepts any one-word type (the spec allows any noun); the type table only supplies names a UI offers.
+- `Ignored` takes `[]dt.RelDirPath` (the known caller passes directories), appends `/` so dir-only patterns match, treats exit 1 as none ignored, and uses git's index-aware default.
+- Tests go in the existing test/ module; E-2602 moves them to go-fsfix later.
+- `CommitClassifier func(subject, body string)`: a caller holding only a subject passes "".
+
+## Correction to the context's embedded-repo advice item
+- The context says `Add` with `Force` should pass `-c advice.addEmbeddedRepo=false`. `Repo.Add` runs through `runGit`, which never streams; git's output is captured and only attached to an error on failure, so the advice reaches no one and E-2568's P11 holds without a change. Dropped; the misleading `AddArgs.Force` comment (it says Force makes a nested repository a gitlink; plain add does that too) is corrected instead.
