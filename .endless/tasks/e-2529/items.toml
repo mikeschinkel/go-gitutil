@@ -40,6 +40,7 @@ id = "P20"
 kind = "deliverable"
 statement = "origin/main equals local main after the push, and the repo has no tags"
 verify = "git rev-parse main origin/main match; git ls-remote --tags origin is empty"
+post_land = true
 
 [[item]]
 id = "P21"
