@@ -1,0 +1,1424 @@
+{
+  "reportFormat": "CTRF",
+  "specVersion": "0.2.0",
+  "results": {
+    "tool": {
+      "name": "endless"
+    },
+    "summary": {
+      "tests": 130,
+      "passed": 130,
+      "failed": 0,
+      "skipped": 0,
+      "pending": 0,
+      "other": 0,
+      "start": 1794793058197,
+      "stop": 1794793069120
+    },
+    "tests": [
+      {
+        "name": "go.mod is tidy without go.work",
+        "status": "passed",
+        "duration": 0,
+        "labels": {
+          "check": "go.mod is tidy without go.work"
+        }
+      },
+      {
+        "name": "go.mod is tidy without go.work (test)",
+        "status": "passed",
+        "duration": 0,
+        "labels": {
+          "check": "go.mod is tidy without go.work (test)"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/type_only",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/scope",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/bang",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/scope_and_bang",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/type_keeps_its_case",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/type_not_in_the_table",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/empty_description",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/merge_subject",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/no_space_after_colon",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/empty_scope",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/unclosed_scope",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/two_words_before_colon",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit/empty_subject",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseConventionalCommit",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitPrefixLen/feat(api)!:_x",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitPrefixLen/fix:_y",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitPrefixLen/no_type_here",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitPrefixLen",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitStringComposes",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitTypeNames",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/feat",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/feat_with_scope",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/feat_bang",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/refactor_scope_bang",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/fix_uppercase",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/feat_capitalized",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/fix",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/docs",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/no_type",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/footer",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/hyphen_footer",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/footer_on_untyped_subject",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/phrase_mid-line",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/phrase_lowercase",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal/phrase_without_colon",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestConventionalCommitSignal",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSummarizeCommitSignals/no_entries",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSummarizeCommitSignals/fix_and_none",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSummarizeCommitSignals/mixed",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSummarizeCommitSignals/only_none",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSummarizeCommitSignals/custom_classifier",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSummarizeCommitSignals",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestInit_BranchIdentityConfig",
+        "status": "passed",
+        "duration": 80,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestInit_ConfigWrittenInSortedOrder",
+        "status": "passed",
+        "duration": 150,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestInit_RefusesIdentityWithoutDisplayName",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestInit_MethodOnNewRepo",
+        "status": "passed",
+        "duration": 170,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestPackageLevel_KeepsRepoArgs",
+        "status": "passed",
+        "duration": 170,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestClone_Args/Branch,_Identity_and_Config",
+        "status": "passed",
+        "duration": 150,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestClone_Args/Config_applies_during_the_clone",
+        "status": "passed",
+        "duration": 90,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestClone_Args/NoCheckout_and_Local",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestClone_Args/Bare",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestClone_Args/Method_on_NewRepo",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestClone_Args",
+        "status": "passed",
+        "duration": 430,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestSetConfigGetConfig",
+        "status": "passed",
+        "duration": 70,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestAdd",
+        "status": "passed",
+        "duration": 90,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_DeterministicWithFixedAuthorAndDate",
+        "status": "passed",
+        "duration": 1190,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_IdentityAndDateDefaults/nil_Committer_uses_Author,_nil_CommitterDate_uses_AuthorDate",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_IdentityAndDateDefaults/separate_Committer_and_CommitterDate",
+        "status": "passed",
+        "duration": 80,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_IdentityAndDateDefaults/nil_Author_lets_git_resolve_it_from_config",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_IdentityAndDateDefaults/nil_AuthorDate_lets_git_use_the_current_time",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_IdentityAndDateDefaults",
+        "status": "passed",
+        "duration": 190,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_RefusesIdentityWithoutDisplayName",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommit_StreamsToStdIO",
+        "status": "passed",
+        "duration": 30,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoIgnored",
+        "status": "passed",
+        "duration": 30,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoIgnoredNone",
+        "status": "passed",
+        "duration": 30,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoIgnoredOneProcess",
+        "status": "passed",
+        "duration": 170,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpen_RemoteAndBranchNamesWithSlash",
+        "status": "passed",
+        "duration": 130,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpen_UnbornAndDetached",
+        "status": "passed",
+        "duration": 70,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpen_SetsRootToTopLevel",
+        "status": "passed",
+        "duration": 50,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestUnopenedRepo",
+        "status": "passed",
+        "duration": 120,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestPackageLevelWrappers",
+        "status": "passed",
+        "duration": 250,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestAddWorktree/new_branch",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestAddWorktree/existing_branch_without_ReuseBranch_fails",
+        "status": "passed",
+        "duration": 10,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestAddWorktree/existing_branch_with_ReuseBranch",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestAddWorktree/new_branch_with_ReuseBranch",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestAddWorktree",
+        "status": "passed",
+        "duration": 150,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestCommitCountAndTreeEntry",
+        "status": "passed",
+        "duration": 170,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpenCachedWorktree",
+        "status": "passed",
+        "duration": 200,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestNewRepo_RunsNoGit",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRun_UsesRepoSettings",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules/StdIO:_the_call's_replaces_the_Repo's",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules/StdIO:_a_nil_call_keeps_the_Repo's",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules/Env:_the_call's_entries_follow_the_Repo's",
+        "status": "passed",
+        "duration": 50,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules/GitPath:_the_call's_replaces_the_Repo's",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules/Strict:_a_call_can_turn_it_on",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules/Strict:_a_call_cannot_turn_it_off",
+        "status": "passed",
+        "duration": 40,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestRepoArgs_CombineRules",
+        "status": "passed",
+        "duration": 190,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestStrict_NeedsGitPath",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestStrict_IsolatesFromEnvironment",
+        "status": "passed",
+        "duration": 140,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestStrict_ControlHostileHomeReachesNonStrictGit",
+        "status": "passed",
+        "duration": 30,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestInfoDir_ResolvesInWorktree",
+        "status": "passed",
+        "duration": 100,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestInfoStore_SaveLoadInWorktree",
+        "status": "passed",
+        "duration": 120,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpen_Remote/tracks_origin/main",
+        "status": "passed",
+        "duration": 30,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpen_Remote/no_upstream",
+        "status": "passed",
+        "duration": 20,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestOpen_Remote",
+        "status": "passed",
+        "duration": 120,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil/test"
+        ],
+        "labels": {
+          "check": "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/BasicHeader",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/HeaderWithFunctionName",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/SingleLineOld",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/SingleLineNew",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/BothSingleLine",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/InvalidHeader",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader/MissingAtSigns",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseHunkHeader",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_SingleFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_MultipleFiles",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_NewFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_DeletedFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestParseUnifiedDiff_EmptyDiff",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestComputeHunkChecksum",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestComputeFileChecksum",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String/context",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String/added",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String/removed",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestDiffLineType_String",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_AddedLines",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_DeletedLines",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_MixedChanges",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestBlockChangeType_String/added",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestBlockChangeType_String/deleted",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestBlockChangeType_String",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "TestExtractChangeBlocks_EmptyFile",
+        "status": "passed",
+        "duration": 0,
+        "suite": [
+          "github.com/mikeschinkel/go-gitutil"
+        ],
+        "labels": {
+          "check": "root module tests (diff parser)"
+        }
+      },
+      {
+        "name": "both modules build and vet without go.work",
+        "status": "passed",
+        "duration": 344,
+        "labels": {
+          "check": "both modules build and vet without go.work"
+        }
+      },
+      {
+        "name": "both modules lint clean with golangci-lint v2.15+",
+        "status": "passed",
+        "duration": 5267,
+        "labels": {
+          "check": "both modules lint clean with golangci-lint v2.15+"
+        }
+      },
+      {
+        "name": "every go.mod says go 1.27.0",
+        "status": "passed",
+        "duration": 8,
+        "labels": {
+          "check": "every go.mod says go 1.27.0"
+        }
+      },
+      {
+        "name": "FindNestedModules is gone",
+        "status": "passed",
+        "duration": 49,
+        "labels": {
+          "check": "FindNestedModules is gone"
+        }
+      },
+      {
+        "name": "the old conventional-commit functions are gone",
+        "status": "passed",
+        "duration": 8,
+        "labels": {
+          "check": "the old conventional-commit functions are gone"
+        }
+      },
+      {
+        "name": "new API is exported",
+        "status": "passed",
+        "duration": 46,
+        "labels": {
+          "check": "new API is exported"
+        }
+      },
+      {
+        "name": "AddArgs.Force no longer claims it makes a nested repository a gitlink",
+        "status": "passed",
+        "duration": 5,
+        "labels": {
+          "check": "AddArgs.Force no longer claims it makes a nested repository a gitlink"
+        }
+      }
+    ]
+  }
+}
