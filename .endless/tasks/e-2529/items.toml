@@ -3,70 +3,70 @@
 #   endless task update E-2529 --items-file <copy>
 
 [[item]]
-id = "P1"
+id = "P14"
 kind = "deliverable"
 statement = "README.md at the repo root says what go-gitutil does, how to install it, shows NewRepo, Open and RepoArgs in a short example, and says what Strict mode isolates"
 
 [[item]]
-id = "P2"
+id = "P15"
 kind = "deliverable"
 statement = "PLAN-CONDENSED-DIFF-TYPES.md is gone from the repo"
 
 [[item]]
-id = "P3"
+id = "P16"
 kind = "deliverable"
 statement = "main contains GitHub's LICENSE-only commit through a merge of unrelated histories; no commit on origin was overwritten and no local commit was rewritten"
 verify = "git merge-base --is-ancestor bd10c91 main, and the pre-merge main is an ancestor of main"
 
 [[item]]
-id = "P4"
+id = "P17"
 kind = "deliverable"
 statement = ".github/workflows/test.yml and release.yml are exactly what gomion repo setup generates for go-gitutil"
 verify = "gomion repo setup --check <go-gitutil> lists no change for go-gitutil"
 
 [[item]]
-id = "P5"
+id = "P18"
 kind = "deliverable"
 statement = "Root go.mod requires go-diffutils v0.1.0, go-dt v0.7.2 and go-dt/dtx v0.3.0 and has no replace; every go.mod says go 1.27.0"
 
 [[item]]
-id = "P6"
+id = "P19"
 kind = "deliverable"
 statement = "With GOWORK=off, the root and test/ modules build, vet and pass their tests, and golangci-lint v2.15.0 reports nothing on either"
 
 [[item]]
-id = "P7"
+id = "P20"
 kind = "deliverable"
 statement = "origin/main equals local main after the push, and the repo has no tags"
 verify = "git rev-parse main origin/main match; git ls-remote --tags origin is empty"
 
 [[item]]
-id = "P8"
+id = "P21"
 kind = "deliverable"
 statement = "The first Test workflow run on the pushed main passes with no warning or notice annotations"
 verify = "gh run view on that run"
 
 [[item]]
-id = "P9"
+id = "P22"
 kind = "deliverable"
 statement = "The task's notes propose v0.1.0 and a release description for the owner to run the Release workflow with"
 
 [[item]]
-id = "P10"
+id = "P23"
 kind = "exclusion"
 statement = "Does not create a tag or run the Release workflow; the owner does"
 
 [[item]]
-id = "P11"
+id = "P24"
 kind = "exclusion"
 statement = "Does not change LatestTag's handling of directory-prefixed tags, which is E-2530 and ships in a later v0.x"
 
 [[item]]
-id = "P12"
+id = "P25"
 kind = "exclusion"
 statement = "Does not move tests or adopt go-fsfix fixtures, which is E-2602"
 
 [[item]]
-id = "P13"
+id = "P26"
 kind = "exclusion"
 statement = "Does not change gomion, go-tealeaves or go-diffutils"
