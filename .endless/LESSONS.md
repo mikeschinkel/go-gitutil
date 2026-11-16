@@ -96,3 +96,7 @@ While planning E-2608 (go-goutil extraction) I filed two go-gitutil tasks, E-262
 ### [2026-11-15] go-stash and gru are irrelevant; leave them out of research and analysis
 Context: planning go-cliutil E-2626 (shorten home-directory paths in printed errors). While surveying apps that use go-cliutil, I cited go-stash and gru as evidence of how apps call writer.Errorf before cliutil.Initialize(). Mike said both are irrelevant projects and should be hidden, as he said earlier of go-nextver. Lesson: when surveying consumers of Mike's packages, leave go-stash and gru out of findings and analysis.
 - **Project**: go-gitutil
+
+### [2026-11-15] Search the full task list before filing
+While planning go-gitutil E-2529 I filed gomion E-2627 (repo setup reads command words as dirs) after grepping `endless task list --all`, which shows only 20 rows by default. E-2540 already covered it, and Mike said several sessions have re-reported this bug. Before filing, search with --no-limit (or read every row) in the target project so a duplicate isn't missed.
+- **Project**: go-gitutil
