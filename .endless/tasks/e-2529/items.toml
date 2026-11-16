@@ -47,6 +47,7 @@ id = "P21"
 kind = "deliverable"
 statement = "The first Test workflow run on the pushed main passes with no warning or notice annotations"
 verify = "gh run view on that run"
+post_land = true
 
 [[item]]
 id = "P22"
