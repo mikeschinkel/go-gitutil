@@ -100,3 +100,7 @@ Context: planning go-cliutil E-2626 (shorten home-directory paths in printed err
 ### [2026-11-15] Search the full task list before filing
 While planning go-gitutil E-2529 I filed gomion E-2627 (repo setup reads command words as dirs) after grepping `endless task list --all`, which shows only 20 rows by default. E-2540 already covered it, and Mike said several sessions have re-reported this bug. Before filing, search with --no-limit (or read every row) in the target project so a duplicate isn't missed.
 - **Project**: go-gitutil
+
+### [2026-11-15] One task per project
+While planning go-gitutil E-2529 I proposed filing one task to move the condensed-diff types across go-diffutils, teadiff (go-tealeaves) and gomion. Mike: each project must have its own tasks; no task type spans projects. File one task per project and link them.
+- **Project**: go-gitutil
