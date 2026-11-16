@@ -209,3 +209,49 @@ func appendPatternsToFile(filePath dt.Filepath, patterns []string) (err error) {
 end:
 	return err
 }
+
+// Ignored returns the subset of paths that git ignores, from a single
+// git check-ignore --stdin -z process however many paths are given. Each
+// path is passed with a trailing slash, so directory-only patterns such as
+// build/ match. A path inside the index is not ignored, as git decides by
+// default. The result keeps the order and spelling of paths; it is empty,
+// with no error, when nothing is ignored. It does not need Open.
+func (r *Repo) Ignored(ctx context.Context, paths []dt.RelDirPath) (ignored []dt.RelDirPath, err error) {
+	var stdin []byte
+	var out string
+	var byQuery map[string]dt.RelDirPath
+
+	if len(paths) == 0 {
+		goto end
+	}
+	byQuery = make(map[string]dt.RelDirPath, len(paths))
+	for _, p := range paths {
+		query := strings.TrimSuffix(string(p), "/") + "/"
+		byQuery[query] = p
+		stdin = append(stdin, query...)
+		stdin = append(stdin, 0)
+	}
+	out, err = r.run(ctx, nil, runArgs{
+		Stdin:        stdin,
+		NULSeparated: true,
+		Command:      []string{"check-ignore", "--stdin", "-z"},
+	})
+	if exitCode(err) == 1 {
+		// No path is ignored.
+		err = nil
+		goto end
+	}
+	if err != nil {
+		err = NewErr(ErrCheckIgnore, err)
+		goto end
+	}
+	for query := range strings.SplitSeq(out, "\x00") {
+		p, ok := byQuery[query]
+		if !ok {
+			continue
+		}
+		ignored = append(ignored, p)
+	}
+end:
+	return ignored, err
+}

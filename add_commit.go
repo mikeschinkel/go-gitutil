@@ -19,8 +19,7 @@ type AddArgs struct {
 	Exclude []dt.RelDirPath
 	// All passes --all, so deletions are staged too.
 	All bool
-	// Force passes --force, so ignored files are added, and a nested
-	// repository is added as a gitlink.
+	// Force passes --force, so files that git ignores are added too.
 	Force bool
 }
 
@@ -255,31 +254,4 @@ func (r *Repo) UnstageFiles(ctx context.Context, args *UnstageFilesArgs) (err er
 	}
 end:
 	return err
-}
-
-// FindNestedModules finds all Go modules in subdirectories of moduleDir
-// (directories with a tracked go.mod).
-func FindNestedModules(moduleDir dt.DirPath) (nestedModules []string, err error) {
-	var out string
-	var lines []string
-
-	out, err = NewRepo(moduleDir, nil).runGit(context.Background(), "ls-files", "*/go.mod")
-	if err != nil {
-		goto end
-	}
-
-	lines = strings.Split(strings.TrimSpace(out), "\n")
-	for _, line := range lines {
-		if line == "" {
-			continue
-		}
-		// Extract directory path from "path/to/module/go.mod"
-		dir := strings.TrimSuffix(line, "/go.mod")
-		if dir != "" && dir != "go.mod" {
-			nestedModules = append(nestedModules, dir)
-		}
-	}
-
-end:
-	return nestedModules, err
 }

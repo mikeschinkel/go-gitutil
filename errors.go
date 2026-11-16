@@ -41,6 +41,7 @@ var (
 	ErrAppendToGitExclude          = errors.New("failed to append to .git/info/exclude")
 	ErrUnstageFile                 = errors.New("failed to unstage file")
 	ErrStageFileContent            = errors.New("failed to stage file content")
+	ErrCheckIgnore                 = errors.New("failed to check ignored paths")
 )
 
 var (

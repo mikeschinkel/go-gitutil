@@ -1,0 +1,50 @@
+# ── DO NOT EDIT ─────────────────────────────────────────────────────
+# This suite belongs to E-2624 and records what was true when E-2624
+# landed. Edit it only if you ARE E-2624. If your change breaks a check
+# here, leave it alone — see .endless/tasks/CLAUDE.md.
+schema = 1
+task   = "E-2624"
+
+[[check]]
+name   = "test/ module: conventional-commit parser, commit signals, Repo.Ignored, and the existing suite"
+runner = "gotest"
+dir    = "test"
+paths  = ["./..."]
+
+[[check]]
+name   = "root module tests (diff parser)"
+runner = "gotest"
+paths  = ["./..."]
+
+[[check]]
+name = "both modules build and vet without go.work"
+sh   = "GOWORK=off go build ./... && GOWORK=off go vet ./... && cd test && GOWORK=off go vet ./..."
+
+[[check]]
+name         = "both modules lint clean with golangci-lint v2.15+"
+sh           = "golangci-lint version 2>&1 && GOWORK=off golangci-lint run ./... 2>&1 && cd test && GOWORK=off golangci-lint run ./... 2>&1"
+not_contains = "issues:"
+
+[[check]]
+name = "every go.mod says go 1.27.0"
+sh   = "grep -qx 'go 1.27.0' go.mod && grep -qx 'go 1.27.0' test/go.mod"
+
+[[check]]
+name     = "FindNestedModules is gone"
+sh       = "GOWORK=off go doc . FindNestedModules 2>&1; true"
+contains = "no symbol FindNestedModules"
+
+[[check]]
+name   = "the old conventional-commit functions are gone"
+sh     = "grep -nE 'func (ParseConventionalCommitType|ComposeConventionalCommitSubject|ConventionalCommitPrefixLen)\\(' *.go || true"
+equals = ""
+
+[[check]]
+name     = "new API is exported"
+sh       = "GOWORK=off go doc -all . | grep -E '^func (ParseConventionalCommit|ConventionalCommitSignal|SummarizeCommitSignals|ConventionalCommitTypeNames)\\(|^func \\(r \\*Repo\\) Ignored\\(|^type (CommitSignal|CommitClassifier|CommitSignals|ConventionalCommit) ' | wc -l | tr -d ' '"
+equals   = "9"
+
+[[check]]
+name   = "AddArgs.Force no longer claims it makes a nested repository a gitlink"
+sh     = "grep -n 'gitlink' add_commit.go || true"
+equals = ""
