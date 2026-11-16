@@ -104,3 +104,7 @@ While planning go-gitutil E-2529 I filed gomion E-2627 (repo setup reads command
 ### [2026-11-15] One task per project
 While planning go-gitutil E-2529 I proposed filing one task to move the condensed-diff types across go-diffutils, teadiff (go-tealeaves) and gomion. Mike: each project must have its own tasks; no task type spans projects. File one task per project and link them.
 - **Project**: go-gitutil
+
+### [2026-11-15] Don't narrate Mike's reasoning
+While naming go-diffutils' condensed-diff type (from go-gitutil E-2529 planning), I wrote that Mike had been 'reaching for' a stats type when he suggested DiffStats. He corrected me: he chose the name from his understanding of the code at the time. Describe a suggestion by what it says and what the code holds, not by guessing what he was after.
+- **Project**: go-gitutil
