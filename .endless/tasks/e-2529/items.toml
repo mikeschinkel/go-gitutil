@@ -15,8 +15,9 @@ statement = "PLAN-CONDENSED-DIFF-TYPES.md is gone from the repo"
 [[item]]
 id = "P16"
 kind = "deliverable"
-statement = "main contains GitHub's LICENSE-only commit through a merge of unrelated histories; no commit on origin was overwritten and no local commit was rewritten"
+statement = "After the land, main contains GitHub's LICENSE-only commit through a merge of unrelated histories made on main in the main checkout; no commit on origin was overwritten and no local commit was rewritten"
 verify = "git merge-base --is-ancestor bd10c91 main, and the pre-merge main is an ancestor of main"
+post_land = true
 
 [[item]]
 id = "P17"
